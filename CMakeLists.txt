@@ -20,7 +20,7 @@ include(cmake/gtest.cmake)
 set(USE_MPI OFF)
 
 ############################### OpenMP ##############################
-option(USE_OMP OFF)
+option(USE_OMP ON)
 if( USE_OMP OR USE_SEQ )
     find_package( OpenMP )
     if( OpenMP_FOUND )
@@ -39,7 +39,7 @@ if( USE_STD )
 endif( USE_STD )
 
 ################################ TBB ################################
-option(USE_TBB OFF)
+option(USE_TBB ON)
 if( USE_TBB )
     include(cmake/onetbb.cmake)
 endif( USE_TBB )
