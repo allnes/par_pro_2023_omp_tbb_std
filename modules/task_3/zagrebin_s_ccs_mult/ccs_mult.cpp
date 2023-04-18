@@ -1,6 +1,6 @@
 // Copyright 2023 Zagrebin S.
 
-#include "../../../modules/task_3/zagrebin_s_ccs_mult/ccs_mult.h"
+#include "ccs_mult.h"
 #include "tbb/parallel_for.h"
 #include <list>
 #include <random>
