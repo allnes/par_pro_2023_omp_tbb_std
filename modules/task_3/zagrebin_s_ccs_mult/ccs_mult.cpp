@@ -1,9 +1,9 @@
 // Copyright 2023 Zagrebin S.
 
+#include "../../../modules/task_3/zagrebin_s_ccs_mult/ccs_mult.h"
 #include "tbb/parallel_for.h"
 #include <list>
 #include <random>
-#include "../../../modules/task_3/zagrebin_s_ccs_mult/ccs_mult.h"
 
 CCS::CCS(size_t n, size_t m): shape{n, m}, offset(m+1) {}
 
