@@ -1,7 +1,7 @@
 // Copyright 2023 Zagrebin S.
 
-#ifndef MODULES_TASK_3_ZAGREBIN_S_CSS_MULT_CCS_MULT_H_
-#define MODULES_TASK_3_ZAGREBIN_S_CSS_MULT_CCS_MULT_H_
+#ifndef MODULES_TASK_3_ZAGREBIN_S_CCS_MULT_CCS_MULT_H_
+#define MODULES_TASK_3_ZAGREBIN_S_CCS_MULT_CCS_MULT_H_
 
 #include <iostream>
 #include <complex>

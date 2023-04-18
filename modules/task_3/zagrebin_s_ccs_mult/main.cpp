@@ -23,7 +23,6 @@ TEST(zagrebin_ccs_tbb, Test_Fixed) {
 }
 
 TEST(zagrebin_ccs_tbb, Test_Zero) {
-    ASSERT_EQ(1,1);
     Comp x[] = {0, 0, 3,
                 0, 0, 0};
 
