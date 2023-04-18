@@ -1,7 +1,7 @@
 // Copyright 2023 Zagrebin S.
 #include <gtest/gtest.h>
-#include "../../../modules/task_3/zagrebin_s_ccs_mult/ccs_mult.h"
 #include <random>
+#include "../../../modules/task_3/zagrebin_s_ccs_mult/ccs_mult.h"
 
 TEST(zagrebin_ccs_tbb, Test_Fixed) {
     Comp x[] = {0, 0, 3,

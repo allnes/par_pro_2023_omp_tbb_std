@@ -1,9 +1,9 @@
 // Copyright 2023 Zagrebin S.
 
 #include "tbb/parallel_for.h"
-#include "../../../modules/task_3/zagrebin_s_ccs_mult/ccs_mult.h"
 #include <list>
 #include <random>
+#include "../../../modules/task_3/zagrebin_s_ccs_mult/ccs_mult.h"
 
 CCS::CCS(size_t n, size_t m): shape{n, m}, offset(m+1) {}
 
@@ -109,9 +109,7 @@ CCS mult(const CCS& _l, const CCS& r) {
     tbb::parallel_for(tbb::blocked_range<size_t>(0, res.shape[1]),
             [&](tbb::blocked_range<size_t> col) {
         for (auto i = col.begin(); i < col.end(); ++i) {  // col from right
-            tbb::parallel_for(tbb::blocked_range<size_t>(0, res.shape[0]),
-                    [&](tbb::blocked_range<size_t> row) {
-                for (auto j = row.begin(); j < row.end(); ++j) {  // row from left
+                for (size_t j = 0; j < res.shape[0]; ++j) {  // row from left
                     Comp x = mult(l.data.cbegin()+l.offset[j],
                                   l.data.cbegin()+l.offset[j+1],
                                   r.data.cbegin()+r.offset[i],
@@ -119,9 +117,10 @@ CCS mult(const CCS& _l, const CCS& r) {
                     if (std::abs(x) > 0.0001)
                         tmp[i].push_back(CCS::elem{j, x});
                 }
-            });
         }
-    });    size_t offset = 0;
+    });
+
+    size_t offset = 0;
     for (size_t i = 0; i < res.shape[1]; ++i)
         res.offset[i+1] = (offset += tmp[i].size());
     res.data.reserve(offset);
