@@ -1,12 +1,14 @@
 // Copyright 2023 Kandrin Alexey
-#ifndef MODULES_TASK_2_KANDRIN_A_COMPONENT_MARKING_COMPONENT_MARKING_H_
-#define MODULES_TASK_2_KANDRIN_A_COMPONENT_MARKING_COMPONENT_MARKING_H_
+#ifndef MODULES_TASK_4_KANDRIN_A_COMPONENT_MARKING_COMPONENT_MARKING_H_
+#define MODULES_TASK_4_KANDRIN_A_COMPONENT_MARKING_COMPONENT_MARKING_H_
 
 #pragma region HelperClasses
 
 #include <ostream>
 #include <random>
 #include <vector>
+
+#include "../../../3rdparty/unapproved/unapproved.h"
 
 //=============================================================================
 // Class   : Matrix
@@ -100,6 +102,9 @@ class WorkSplitter {
   // proportional to the workerCount, then all workers will do the same amount
   // of work)
   size_t GetPartWork(size_t workerNumber) const;
+
+  // Determining the worker by the range of work that he needs to do
+  size_t GetWorker(size_t partWorkBegin, size_t partWorkEnd);
 };
 
 //=============================================================================
@@ -157,4 +162,81 @@ LabelImage GetComponentMarking(const BinaryImage& sourceImage) {
   return GetComponentMarkingImp<executionPolicy>(sourceImage);
 }
 
-#endif  // MODULES_TASK_2_KANDRIN_A_COMPONENT_MARKING_COMPONENT_MARKING_H_
+// Get the maximum number of threads
+size_t GetMaxThreads();
+
+// Parallel execution of functions
+template <class Functor>
+void parallel_invoke(Functor&& functor) {
+  // Single functor runs in main thread
+  functor();
+}
+
+// Parallel execution of functions
+template <class Functor, class... Functors>
+void parallel_invoke(Functor&& functor, Functors... functors) {
+  // since the function above was not chosen as an overload,
+  // the "functors" is not empty.
+  // run one of the functors in parallel
+  std::thread thread(functor);
+  parallel_invoke(functors...);
+  thread.join();
+}
+
+// Only for structures that support the operator[/*index*/]
+// The functor takes two arguments (the index of the start and end of the range)
+template <class Functor>
+void parallel_for(size_t size, Functor&& functor) {
+  size_t workerCount = GetMaxThreads();
+  WorkSplitter workSplitter(size, workerCount);
+
+  std::vector<std::thread> workerThreads;
+  size_t partWorkForMainThread = workSplitter.GetPartWork(0);
+
+  // Distribute work to other threads
+  size_t sumPartWork = partWorkForMainThread;
+  for (size_t workerIndex = 1; workerIndex < workerCount; ++workerIndex) {
+    size_t partWorkForCurrentThread = workSplitter.GetPartWork(workerIndex);
+    if (partWorkForCurrentThread == 0) continue;
+    workerThreads.push_back(std::thread(
+        functor, sumPartWork, sumPartWork + partWorkForCurrentThread));
+    sumPartWork += partWorkForCurrentThread;
+  }
+
+  // Doing our part of the job
+  functor(0, partWorkForMainThread);
+
+  // Waiting for all other threads to complete
+  for (auto&& workerThread : workerThreads) workerThread.join();
+}
+
+// Only for structures that support the operator[/*index*/]
+// The functor takes three arguments (the index of the start, end of the range
+// and current value) and returns reduced result The reduce functor takes two
+// arguments and returns reduced result
+template <class Functor, class T, class ReduceFunctor>
+T parallel_reduce(size_t size, T initialValue, Functor&& functor,
+                  ReduceFunctor&& reduceFunctor) {
+  size_t workerCount = GetMaxThreads();
+  WorkSplitter workSplitter(size, workerCount);
+  std::vector<T> results(workerCount);
+
+  parallel_for(size, [initialValue, &workSplitter, &results, &functor](
+                         const size_t begin, const size_t end) {
+    auto result = functor(begin, end, initialValue);
+    size_t workerIndex = workSplitter.GetWorker(begin, end);
+
+    if (workerIndex < results.size()) {
+      results[workerIndex] = result;
+    }
+  });
+
+  auto result = initialValue;
+  for (size_t i = 0; i < results.size(); ++i) {
+    result = reduceFunctor(result, results[i]);
+  }
+
+  return result;
+}
+
+#endif  // MODULES_TASK_4_KANDRIN_A_COMPONENT_MARKING_COMPONENT_MARKING_H_

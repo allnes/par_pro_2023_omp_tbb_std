@@ -2,9 +2,9 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
-#include "../../../modules/task_1/raschetnov_a_ccs_double_matrix/ccs_double_matrix.h"
+#include "../../../modules/task_2/raschetnov_a_ccs_double_matrix/ccs_double_matrix.h"
 
-TEST(Sequent_task, test1) {
+TEST(OMP_task, test1) {
     std::vector<double> values_a = {1.5, 5.6, 9, 3.4, 8.9};
     std::vector<int> rows_a = {0, 2, 0, 0, 1};
     std::vector<int> pointer_a = {0, 2, 3, 5};
@@ -20,11 +20,18 @@ TEST(Sequent_task, test1) {
     SparseMatrix a(3, 3, values_a, rows_a, pointer_a);
     SparseMatrix b(3, 3, values_b, rows_b, pointer_b);
     SparseMatrix c(3, 3, values_c, rows_c, pointer_c);
+    SparseMatrix result(3, 3);
 
-    EXPECT_EQ(true, c == a.transpose().multiply(b));
+    // printf("C:\n");
+    // c.print();
+    result = a.transpose().multiply(b);
+    // printf("result:\n");
+    // result.print();
+
+    EXPECT_EQ(true, c == result);
 }
 
-TEST(Sequent_task, test2) {
+TEST(OMP_task, test2) {
     std::vector<double> values_a = {4.4, 3.2, 1.1, 6.1, 4.9};
     std::vector<int> rows_a = {0, 1, 2, 0, 1};
     std::vector<int> pointer_a = {0, 3, 3, 5};
@@ -40,11 +47,18 @@ TEST(Sequent_task, test2) {
     SparseMatrix a(3, 3, values_a, rows_a, pointer_a);
     SparseMatrix b(3, 3, values_b, rows_b, pointer_b);
     SparseMatrix c(3, 3, values_c, rows_c, pointer_c);
+    SparseMatrix result(3, 3);
 
-    EXPECT_EQ(true, c == a.transpose().multiply(b));
+    // printf("C:\n");
+    // c.print();
+    result = a.transpose().multiply(b);
+    // printf("result:\n");
+    // result.print();
+
+    EXPECT_EQ(true, c == result);
 }
 
-TEST(Sequent_task, test3) {
+TEST(OMP_task, test3) {
     std::vector<double> values_a = {10.5, 1.9, 9.3, 2.2};
     std::vector<int> rows_a = {0, 2, 1, 1};
     std::vector<int> pointer_a = {0, 2, 3, 4};
@@ -60,11 +74,18 @@ TEST(Sequent_task, test3) {
     SparseMatrix a(3, 3, values_a, rows_a, pointer_a);
     SparseMatrix b(3, 3, values_b, rows_b, pointer_b);
     SparseMatrix c(3, 3, values_c, rows_c, pointer_c);
+    SparseMatrix result(3, 3);
 
-    EXPECT_EQ(true, c == a.transpose().multiply(b));
+    // printf("C:\n");
+    // c.print();
+    result = a.transpose().multiply(b);
+    // printf("result:\n");
+    // result.print();
+
+    EXPECT_EQ(true, c == result);
 }
 
-TEST(Sequent_task, test4) {
+TEST(OMP_task, test4) {
     std::vector<double> values_a = {4.76, 2.23, 5.71};
     std::vector<int> rows_a = {2, 0, 1};
     std::vector<int> pointer_a = {0, 1, 2, 3};
@@ -80,11 +101,18 @@ TEST(Sequent_task, test4) {
     SparseMatrix a(3, 3, values_a, rows_a, pointer_a);
     SparseMatrix b(3, 3, values_b, rows_b, pointer_b);
     SparseMatrix c(3, 3, values_c, rows_c, pointer_c);
+    SparseMatrix result(3, 3);
 
-    EXPECT_EQ(true, c == a.transpose().multiply(b));
+    // printf("C:\n");
+    // c.print();
+    result = a.transpose().multiply(b);
+    // printf("result:\n");
+    // result.print();
+
+    EXPECT_EQ(true, c == result);
 }
 
-TEST(Sequent_task, test5) {
+TEST(OMP_task, test5) {
     std::vector<double> values_a = {1};
     std::vector<int> rows_a = {0};
     std::vector<int> pointer_a = {0, 0, 1, 1};
@@ -96,11 +124,18 @@ TEST(Sequent_task, test5) {
     SparseMatrix a(3, 3, values_a, rows_a, pointer_a);
     SparseMatrix b(3, 3, values_b, rows_b, pointer_b);
     SparseMatrix c(3, 3);
+    SparseMatrix result(3, 3);
 
-    EXPECT_EQ(true, c == a.transpose().multiply(b));
+    // printf("C:\n");
+    // c.print();
+    result = a.transpose().multiply(b);
+    // printf("result:\n");
+    // result.print();
+
+    EXPECT_EQ(true, c == result);
 }
 
-TEST(Sequent_task, test6) {
+TEST(OMP_task, test6) {
     std::vector<double> values_a = {2, 1, 3};
     std::vector<int> rows_a = {1, 0, 2};
     std::vector<int> pointer_a = {0, 1, 3};
@@ -116,11 +151,18 @@ TEST(Sequent_task, test6) {
     SparseMatrix a(3, 2, values_a, rows_a, pointer_a);
     SparseMatrix b(2, 3, values_b, rows_b, pointer_b);
     SparseMatrix c(3, 3, values_c, rows_c, pointer_c);
+    SparseMatrix result(3, 3);
 
-    EXPECT_EQ(true, c == a.transpose().multiply(b));
+    // printf("C:\n");
+    // c.print();
+    result = a.transpose().multiply(b);
+    // printf("result:\n");
+    // result.print();
+
+    EXPECT_EQ(true, c == result);
 }
 
-TEST(Sequent_task, test7) {
+TEST(OMP_task, test7) {
     std::vector<double> values_a = {9.7, 2.1, 1.3};
     std::vector<int> rows_a = {3, 0, 1};
     std::vector<int> pointer_a = {0, 1, 3};
@@ -136,8 +178,15 @@ TEST(Sequent_task, test7) {
     SparseMatrix a(4, 2, values_a, rows_a, pointer_a);
     SparseMatrix b(2, 4, values_b, rows_b, pointer_b);
     SparseMatrix c(4, 4, values_c, rows_c, pointer_c);
+    SparseMatrix result(3, 3);
 
-    EXPECT_EQ(true, c == a.transpose().multiply(b));
+    // printf("C:\n");
+    // c.print();
+    result = a.transpose().multiply(b);
+    // printf("result:\n");
+    // result.print();
+
+    EXPECT_EQ(true, c == result);
 }
 
 int main(int argc, char **argv) {

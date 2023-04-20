@@ -1,7 +1,9 @@
 // Copyright 2023 Kandrin Alexey
-#include "../../../modules/task_2/kandrin_a_component_marking/component_marking.h"
+#include "../../../modules/task_3/kandrin_a_component_marking/component_marking.h"
 
-#include <omp.h>
+#include <tbb/parallel_for.h>
+#include <tbb/parallel_invoke.h>
+#include <tbb/parallel_reduce.h>
 
 #include <algorithm>
 #include <cassert>
@@ -74,13 +76,8 @@ void Union<ExecutionPolicy::Sequential>(Label x, Label y, Parent* parent) {
 // Union of two sets (parallel implementation)
 template <>
 void Union<ExecutionPolicy::Parallel>(Label x, Label y, Parent* parent) {
-#pragma omp parallel sections
-  {
-#pragma omp section
-    { x = FindParent(x, *parent); }
-#pragma omp section
-    { y = FindParent(y, *parent); }
-  }
+  tbb::parallel_invoke([&x, parent]() { x = FindParent(x, *parent); },
+                       [&y, parent]() { y = FindParent(y, *parent); });
   if (x != y) {
     parent->at(y) = x;
   }
@@ -211,27 +208,35 @@ void FixNumeration<ExecutionPolicy::Parallel>(Label* arr, size_t size) {
       maxLabelCount, false);  // "bool" can not be used here
                               // due to to the presence of an inappropriate (in
                               // this case) specialization std::vector<bool>
-#pragma omp parallel for
-  for (int i = 0; i < size; ++i) {
-    assert(arr[i] <
-           isLabelExist.size());  // it is assumed that in the arr array now
-                                  // possible from 0 to maxLabelCount
-    isLabelExist[arr[i]] = true;
-  }
+  tbb::parallel_for(
+      tbb::blocked_range<size_t>(0, size),
+      [&isLabelExist, arr](const tbb::blocked_range<size_t>& range) {
+        for (auto index = range.begin(); index != range.end(); ++index) {
+          assert(arr[index] <
+                 isLabelExist.size());  // it is assumed that in the arr array
+                                        // now possible from 0 to maxLabelCount
+          isLabelExist[arr[index]] = true;
+        }
+      });
+
+  struct MaxLabel {
+    Label operator()(Label label1, Label label2) const {
+      return std::max(label1, label2);
+    }
+  };
 
   // Get the value of the maximum label (to optimize the next loop)
-  std::vector<Label> maxLabels(omp_get_max_threads(), 0);
-#pragma omp parallel shared(maxLabels)
-  {
-    size_t currentThreadNumber = static_cast<size_t>(omp_get_thread_num());
-#pragma omp for
-    for (int i = 0; i < size; ++i) {
-      if (arr[i] > maxLabels[currentThreadNumber]) {
-        maxLabels[currentThreadNumber] = arr[i];
-      }
-    }
-  }
-  Label maxLabel = *std::max_element(maxLabels.begin(), maxLabels.end());
+  Label maxLabel = tbb::parallel_reduce(
+      tbb::blocked_range<size_t>(0, size), Label{0},
+      [arr](const tbb::blocked_range<size_t>& range, Label maxLabel) {
+        for (auto index = range.begin(); index != range.end(); ++index) {
+          if (arr[index] > maxLabel) {
+            maxLabel = arr[index];
+          }
+        }
+        return maxLabel;
+      },
+      MaxLabel());
 
   // Get a list of replacements
 
@@ -264,10 +269,14 @@ void FixNumeration<ExecutionPolicy::Parallel>(Label* arr, size_t size) {
   }
 
   for (auto&& replace : replaceArr) {
-#pragma omp parallel for
-    for (int i = 0; i < size; ++i) {
-      if (arr[i] == replace.before) arr[i] = replace.after;
-    }
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, size),
+                      [arr, &replace](const tbb::blocked_range<size_t>& range) {
+                        for (auto index = range.begin(); index != range.end();
+                             ++index) {
+                          if (arr[index] == replace.before)
+                            arr[index] = replace.after;
+                        }
+                      });
   }
 }
 }  // namespace
@@ -352,12 +361,17 @@ LabelImage GetComponentMarkingImp<ExecutionPolicy::Parallel>(
   size_t plainArraySourceSize = source.GetRowCount() * source.GetColCount();
   auto plainArrayResult = result.data();
 
-#pragma omp parallel for
-  for (int i = 0; i < plainArraySourceSize; ++i) {
-    if (plainArraySource[i] == 1) {
-      plainArrayResult[i] = FindParent(plainArrayResult[i], parent);
-    }
-  }
+  tbb::parallel_for(tbb::blocked_range<size_t>(0, plainArraySourceSize),
+                    [plainArraySource, plainArrayResult,
+                     &parent](const tbb::blocked_range<size_t>& range) {
+                      for (auto index = range.begin(); index != range.end();
+                           ++index) {
+                        if (plainArraySource[index] == 1) {
+                          plainArrayResult[index] =
+                              FindParent(plainArrayResult[index], parent);
+                        }
+                      }
+                    });
 
   FixNumeration<ExecutionPolicy::Parallel>(
       result.data(), result.GetRowCount() * result.GetColCount());

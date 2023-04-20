@@ -1,6 +1,8 @@
 // Copyright 2023 Raschetnov Alexei
 
-#include "../../../modules/task_1/raschetnov_a_ccs_double_matrix/ccs_double_matrix.h"
+#include "../../../modules/task_2/raschetnov_a_ccs_double_matrix/ccs_double_matrix.h"
+#include <omp.h>
+#include <utility>
 
 SparseMatrix SparseMatrix::multiply(const SparseMatrix& matrix) {
     SparseMatrix result(row, matrix.col);
@@ -9,6 +11,7 @@ SparseMatrix SparseMatrix::multiply(const SparseMatrix& matrix) {
         int counter = 0;
         std::vector<double> values_a(values.begin() + pointer[i - 1], values.begin() + pointer[i]);
         std::vector<double> row_a(rows.begin() + pointer[i - 1], rows.begin() + pointer[i]);
+        #pragma omp parallel for schedule(static)
         for (int j = 1; j < matrix.pointer.size(); j++) {
             std::vector<double> values_b(matrix.values.begin() + matrix.pointer[j - 1],
                                          matrix.values.begin() + matrix.pointer[j]);
@@ -28,6 +31,7 @@ SparseMatrix SparseMatrix::multiply(const SparseMatrix& matrix) {
                     k++;
                 }
             }
+            #pragma omp critical
             if (sum) {
                 result.values.push_back(sum);
                 counter++;
@@ -112,3 +116,16 @@ void SparseMatrix::print() {
         std::cout << pointer[i] << " ";
     std::cout << std::endl;
 }
+
+// std::vector<double> sort_vec(std::vector<std::pair<int, double>>& vec) {
+//     std::vector<double> result;
+
+//     for (int i = 0; i < vec.size() - 1; i++)
+//     for (int j = 0; j < vec.size() - i - 1; j++) {
+//         if (vec[j].first > vec[j + 1].first) {
+//             int tmp = vec[j].second;
+//             vec[j].second = vec[j + 1].second;
+//             vec[j + 1].second = tmp;
+//         }
+//     }
+// }

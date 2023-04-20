@@ -1,7 +1,5 @@
 // Copyright 2023 Kandrin Alexey
-#include "../../../modules/task_2/kandrin_a_component_marking/component_marking.h"
-
-#include <omp.h>
+#include "../../../modules/task_4/kandrin_a_component_marking/component_marking.h"
 
 #include <algorithm>
 #include <cassert>
@@ -34,6 +32,28 @@ WorkSplitter::WorkSplitter(size_t work, size_t workerCount)
 //=============================================================================
 size_t WorkSplitter::GetPartWork(size_t workerNumber) const {
   return m_workDistribution[workerNumber];
+}
+
+//=============================================================================
+// Function : GetPartWork
+// Purpose  : Determining how much work a worker should do.
+//=============================================================================
+size_t WorkSplitter::GetWorker(size_t partWorkBegin, size_t partWorkEnd) {
+  size_t currentWorkerWorkBegin = 0;
+  for (size_t i = 0; i < m_workDistribution.size(); ++i) {
+    size_t currentWorkerWorkEnd =
+        currentWorkerWorkBegin + m_workDistribution[i];
+    if (partWorkBegin >= currentWorkerWorkBegin &&
+        partWorkEnd <= currentWorkerWorkEnd) {
+      assert(partWorkBegin == currentWorkerWorkBegin &&
+             partWorkEnd == currentWorkerWorkEnd);
+      return i;
+    }
+
+    currentWorkerWorkBegin = currentWorkerWorkEnd;
+  }
+  assert(false);
+  return -1;
 }
 
 #pragma endregion HelperClassesImplementation
@@ -74,13 +94,9 @@ void Union<ExecutionPolicy::Sequential>(Label x, Label y, Parent* parent) {
 // Union of two sets (parallel implementation)
 template <>
 void Union<ExecutionPolicy::Parallel>(Label x, Label y, Parent* parent) {
-#pragma omp parallel sections
-  {
-#pragma omp section
-    { x = FindParent(x, *parent); }
-#pragma omp section
-    { y = FindParent(y, *parent); }
-  }
+  parallel_invoke([&x, parent]() { x = FindParent(x, *parent); },
+                  [&y, parent]() { y = FindParent(y, *parent); });
+
   if (x != y) {
     parent->at(y) = x;
   }
@@ -211,27 +227,29 @@ void FixNumeration<ExecutionPolicy::Parallel>(Label* arr, size_t size) {
       maxLabelCount, false);  // "bool" can not be used here
                               // due to to the presence of an inappropriate (in
                               // this case) specialization std::vector<bool>
-#pragma omp parallel for
-  for (int i = 0; i < size; ++i) {
-    assert(arr[i] <
-           isLabelExist.size());  // it is assumed that in the arr array now
-                                  // possible from 0 to maxLabelCount
-    isLabelExist[arr[i]] = true;
-  }
+  parallel_for(
+      size, [&isLabelExist, arr](const size_t begin, const size_t end) {
+        for (auto index = begin; index != end; ++index) {
+          assert(arr[index] <
+                 isLabelExist.size());  // it is assumed that in the arr array
+                                        // now possible from 0 to maxLabelCount
+          isLabelExist[arr[index]] = true;
+        }
+      });
 
   // Get the value of the maximum label (to optimize the next loop)
-  std::vector<Label> maxLabels(omp_get_max_threads(), 0);
-#pragma omp parallel shared(maxLabels)
-  {
-    size_t currentThreadNumber = static_cast<size_t>(omp_get_thread_num());
-#pragma omp for
-    for (int i = 0; i < size; ++i) {
-      if (arr[i] > maxLabels[currentThreadNumber]) {
-        maxLabels[currentThreadNumber] = arr[i];
-      }
-    }
-  }
-  Label maxLabel = *std::max_element(maxLabels.begin(), maxLabels.end());
+  Label maxLabel = parallel_reduce(
+      size, Label{0},
+      [arr](const size_t begin, const size_t end, Label maxLabel) {
+        for (auto index = begin; index != end; ++index) {
+          if (arr[index] > maxLabel) {
+            maxLabel = arr[index];
+          }
+        }
+        return maxLabel;
+      },
+      static_cast<const Label& (*)(const Label&, const Label&)>(
+          &std::max<Label>));
 
   // Get a list of replacements
 
@@ -264,10 +282,11 @@ void FixNumeration<ExecutionPolicy::Parallel>(Label* arr, size_t size) {
   }
 
   for (auto&& replace : replaceArr) {
-#pragma omp parallel for
-    for (int i = 0; i < size; ++i) {
-      if (arr[i] == replace.before) arr[i] = replace.after;
-    }
+    parallel_for(size, [arr, &replace](const size_t begin, const size_t end) {
+      for (auto index = begin; index != end; ++index) {
+        if (arr[index] == replace.before) arr[index] = replace.after;
+      }
+    });
   }
 }
 }  // namespace
@@ -352,15 +371,21 @@ LabelImage GetComponentMarkingImp<ExecutionPolicy::Parallel>(
   size_t plainArraySourceSize = source.GetRowCount() * source.GetColCount();
   auto plainArrayResult = result.data();
 
-#pragma omp parallel for
-  for (int i = 0; i < plainArraySourceSize; ++i) {
-    if (plainArraySource[i] == 1) {
-      plainArrayResult[i] = FindParent(plainArrayResult[i], parent);
+  parallel_for(plainArraySourceSize, [plainArraySource, plainArrayResult,
+                                      &parent](const size_t begin,
+                                               const size_t end) {
+    for (auto index = begin; index != end; ++index) {
+      if (plainArraySource[index] == 1) {
+        plainArrayResult[index] = FindParent(plainArrayResult[index], parent);
+      }
     }
-  }
+  });
 
   FixNumeration<ExecutionPolicy::Parallel>(
       result.data(), result.GetRowCount() * result.GetColCount());
 
   return result;
 }
+
+// Get the maximum number of threads
+size_t GetMaxThreads() { return std::thread::hardware_concurrency(); }

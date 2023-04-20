@@ -1,6 +1,12 @@
 // Copyright 2023 Raschetnov Alexei
 
-#include "../../../modules/task_1/raschetnov_a_ccs_double_matrix/ccs_double_matrix.h"
+#include "../../../modules/task_3/raschetnov_a_ccs_double_matrix/ccs_double_matrix.h"
+#include <tbb/tbb.h>
+#include <tbb/queuing_mutex.h>
+#include <tbb/global_control.h>
+#include <utility>
+
+tbb::queuing_mutex mutex;
 
 SparseMatrix SparseMatrix::multiply(const SparseMatrix& matrix) {
     SparseMatrix result(row, matrix.col);
@@ -9,31 +15,38 @@ SparseMatrix SparseMatrix::multiply(const SparseMatrix& matrix) {
         int counter = 0;
         std::vector<double> values_a(values.begin() + pointer[i - 1], values.begin() + pointer[i]);
         std::vector<double> row_a(rows.begin() + pointer[i - 1], rows.begin() + pointer[i]);
-        for (int j = 1; j < matrix.pointer.size(); j++) {
-            std::vector<double> values_b(matrix.values.begin() + matrix.pointer[j - 1],
-                                         matrix.values.begin() + matrix.pointer[j]);
-            std::vector<double> row_b(matrix.rows.begin() + matrix.pointer[j - 1],
-                                      matrix.rows.begin() + matrix.pointer[j]);
-            int k = 0;
-            int s = 0;
-            double sum = 0;
-            while (k < values_a.size() && s < values_b.size()) {
-                if (row_a[k] == row_b[s]) {
-                    sum += values_a[k] * values_b[s];
-                    k++;
-                    s++;
-                } else if (row_a[k] > row_b[s]) {
-                    s++;
-                } else {
-                    k++;
+        tbb::global_control gc(tbb::global_control::max_allowed_parallelism, matrix.pointer.size());
+        int size = matrix.pointer.size();
+        tbb::parallel_for(tbb::blocked_range<int>(1, size), [&](const tbb::blocked_range<int>& it) {
+            tbb::queuing_mutex::scoped_lock lock;
+            for (int j = it.begin(); j < it.end(); j++) {
+                std::vector<double> values_b(matrix.values.begin() + matrix.pointer[j - 1],
+                                            matrix.values.begin() + matrix.pointer[j]);
+                std::vector<double> row_b(matrix.rows.begin() + matrix.pointer[j - 1],
+                                        matrix.rows.begin() + matrix.pointer[j]);
+                int k = 0;
+                int s = 0;
+                double sum = 0;
+                while (k < values_a.size() && s < values_b.size()) {
+                    if (row_a[k] == row_b[s]) {
+                        sum += values_a[k] * values_b[s];
+                        k++;
+                        s++;
+                    } else if (row_a[k] > row_b[s]) {
+                        s++;
+                    } else {
+                        k++;
+                    }
+                }
+                if (sum) {
+                    lock.acquire(mutex);
+                    result.values.push_back(sum);
+                    counter++;
+                    result.rows.push_back(j - 1);
+                    lock.release();
                 }
             }
-            if (sum) {
-                result.values.push_back(sum);
-                counter++;
-                result.rows.push_back(j - 1);
-            }
-        }
+        });
         result.pointer.push_back(result.pointer.back() + counter);
     }
     result.transpose();
@@ -112,3 +125,16 @@ void SparseMatrix::print() {
         std::cout << pointer[i] << " ";
     std::cout << std::endl;
 }
+
+// std::vector<double> sort_vec(std::vector<std::pair<int, double>>& vec) {
+//     std::vector<double> result;
+
+//     for (int i = 0; i < vec.size() - 1; i++)
+//     for (int j = 0; j < vec.size() - i - 1; j++) {
+//         if (vec[j].first > vec[j + 1].first) {
+//             int tmp = vec[j].second;
+//             vec[j].second = vec[j + 1].second;
+//             vec[j + 1].second = tmp;
+//         }
+//     }
+// }
