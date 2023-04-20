@@ -39,7 +39,7 @@ TEST(Fox_Mult_TBB, res_fox_mult_is_correct) {
       {19.7, 20.06, 20.42}, {40.76, 41.51, 42.26}, {61.82, 62.96, 64.1}};
   Matrix res = foxMultiply(X, Y);
   for (int k = 0; k < 3; k++) {
-    for (int l = 0; l < 3; l++) {
+    for (int l = 0; l < 3; l++ ) {
       EXPECT_NEAR(res[k][l], Z[k][l], 0.001);
     }
   }
