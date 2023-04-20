@@ -33,7 +33,7 @@ bool isMultiplied(const Matrix& X, const Matrix& Y) {
 }
 
 Matrix MultiplyFox(const Matrix& X, const Matrix& Y, const int& numThreads) {
-  if (!Square(X) || !Square(Y)) throw("Matrix isn't square");
+  if (!Square(X) || !Square(Y)) throw("Matrix no square");
   if (!isMultiplied(X, Y)) throw("Incorrect size of matrix");
   int n = X.size();
   int q = std::sqrt(numThreads);
