@@ -121,9 +121,9 @@ Matrix randM(const int& size) {
   std::mt19937 gen(rd());
   std::uniform_real_distribution<> dis(0, 1000.0);
   Matrix matr(size, std::vector<double>(size));
-  for (int k = 0; k < size; k++) {
+  for (int m = 0; m < size; m++) {
     for (int l = 0; l < size; l++) {
-      matr[k][l] = dis(gen);
+      matr[m][l] = dis(gen);
     }
   }
   return matr;
