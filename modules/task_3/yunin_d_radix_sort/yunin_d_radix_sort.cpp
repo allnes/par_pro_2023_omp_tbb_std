@@ -10,8 +10,6 @@
 #include <numeric>
 #include "../../../modules/task_3/yunin_d_radix_sort/yunin_d_radix_sort.h"
 
-using namespace tbb;
-
 void printVector(const std::vector<double>& vec) {
     for (int i = 0; i < vec.size(); i++) {
         std::cout << vec[i] << " ";
@@ -51,8 +49,7 @@ std::vector<double> merge(const std::vector<double>& arr1,
         if (arr1[indexFirst] > arr2[indexSecond]) {
             out[i] = arr2[indexSecond];
             indexSecond++;
-        }
-        else if (arr1[indexFirst] <= arr2[indexSecond]) {
+        } else if (arr1[indexFirst] <= arr2[indexSecond]) {
             out[i] = arr1[indexFirst];
             indexFirst++;
         }
@@ -110,8 +107,7 @@ bool countSortFinalStep(double* in, double* out, int len) {
             out[i] = in[j];
             if (flag) {
                 j++;
-            }
-            else {
+            } else {
                 j--;
             }
             if (j == firstNegativeIndex - 1 && !flag) {
@@ -120,8 +116,7 @@ bool countSortFinalStep(double* in, double* out, int len) {
             }
         }
         return true;
-    }
-    else if (!positiveFlag) {
+    } else if (!positiveFlag) {
         for (int i = len - 1, j = 0; i >= 0; i--, j++) {
             out[j] = in[i];
         }
@@ -177,7 +172,8 @@ std::vector<double> radixSortParallOmp(const std::vector<double>& data, int numP
     // auto start1 = std::chrono::high_resolution_clock::now();
 
     tbb::global_control gc(tbb::global_control::max_allowed_parallelism, vectorsForParallel.size());
-    tbb::parallel_for(tbb::blocked_range<double>(0, vectorsForParallel.size()), [&](const tbb::blocked_range<double>& r) {
+    tbb::parallel_for(tbb::blocked_range<double>(0, vectorsForParallel.size()),
+        [&](const tbb::blocked_range<double>& r) {
         for (int i = r.begin(); i < r.end(); ++i) {
             vectorsForParallel[i] = radixSortSeq(vectorsForParallel[i]);
         }
