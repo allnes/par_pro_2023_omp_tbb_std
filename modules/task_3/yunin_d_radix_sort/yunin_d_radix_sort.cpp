@@ -6,7 +6,7 @@
 #include <string>
 #include <random>
 #include <iostream>
-//#include <functional>
+#include <functional>
 #include <numeric>
 #include "../../../modules/task_3/yunin_d_radix_sort/yunin_d_radix_sort.h"
 
@@ -185,7 +185,7 @@ std::vector<double> radixSortParallOmp(const std::vector<double>& data, int numP
 
     // auto stop1 = std::chrono::high_resolution_clock::now();
     // auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
-    // std::cout << "duration_omp: " << duration1.count() << '\n';
+    // std::cout << "duration_tbb: " << duration1.count() << '\n';
     for (int i = 0; i < vectorsForParallel.size(); i++) {
         finalResult = merge(finalResult, vectorsForParallel[i]);
     }

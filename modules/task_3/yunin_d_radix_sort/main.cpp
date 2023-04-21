@@ -1,20 +1,25 @@
 // Copyright 2023 Yunin Daniil
 #include <gtest/gtest.h>
 #include <vector>
+#include <iostream>
+#include <algorithm>
+#include <chrono>
 #include "../../../modules/task_3/yunin_d_radix_sort/yunin_d_radix_sort.h"
 
 const int numParts = 4;
 
-TEST(Parallel_Operations_TBB, Test_Sum_2) {
-    ASSERT_EQ(1, 1);
-}
 
 TEST(Parallel_Operations_TBB, Test_Sort_With_1000000_Random_Elements) {
     int size = 1000000;
     std::vector<double> vec1 = getRandomVector(size, -10, 10);
-    std::vector<double> firstPart = vec1;
-    std::vector<double> result;
+    std::vector<double> firstPart = vec1, secondPart = vec1;
+    std::vector<double> result, result1;
 
+    // auto start2 = std::chrono::high_resolution_clock::now();
+    // result1 = radixSortSeq(secondPart);
+    // auto stop2 = std::chrono::high_resolution_clock::now();
+    // auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(stop2 - start2);
+    // std::cout << "duration_seq: " << duration2.count() << '\n';
     result = radixSortParallOmp(firstPart, numParts);
     std::sort(vec1.begin(), vec1.end());
     // printVector(vec1);
@@ -23,48 +28,59 @@ TEST(Parallel_Operations_TBB, Test_Sort_With_1000000_Random_Elements) {
         ASSERT_EQ(vec1[i], result[i]);
     }
 }
-//TEST(Parallel_Operations_TBB, Test_Sum_3) {
-//    ASSERT_EQ(1, 1);
-//}
-//
-//TEST(Parallel_Operations_TBB, Test_Sum_2) {
-//    ASSERT_EQ(1, 1);
-//}
 
-//TEST(Parallel_Operations_TBB, Test_Sum) {
-//    std::vector<int> vec = getRandomVector(100);
-//    int sequential_sum = getSequentialOperations(vec, "+");
-//    int parallel_sum = getParallelOperations(vec, "+");
-//    ASSERT_EQ(sequential_sum, parallel_sum);
-//}
-//
-//TEST(Parallel_Operations_TBB, Test_Diff) {
-//    std::vector<int> vec = getRandomVector(100);
-//    int sequential_diff = getSequentialOperations(vec, "-");
-//    int parallel_diff = getParallelOperations(vec, "-");
-//    ASSERT_EQ(sequential_diff, parallel_diff);
-//}
-//
-//TEST(Parallel_Operations_TBB, Test_Diff_2) {
-//    std::vector<int> vec = getRandomVector(50);
-//    int sequential_diff = getSequentialOperations(vec, "-");
-//    int parallel_diff = getParallelOperations(vec, "-");
-//    ASSERT_EQ(sequential_diff, parallel_diff);
-//}
-//
-//TEST(Parallel_Operations_TBB, Test_Mult) {
-//    std::vector<int> vec = getRandomVector(10);
-//    int sequential_mult = getSequentialOperations(vec, "*");
-//    int parallel_mult = getParallelOperations(vec, "*");
-//    ASSERT_EQ(sequential_mult, parallel_mult);
-//}
-//
-//TEST(Parallel_Operations_TBB, Test_Mult_2) {
-//    std::vector<int> vec = getRandomVector(5);
-//    int sequential_mult = getSequentialOperations(vec, "*");
-//    int parallel_mult = getParallelOperations(vec, "*");
-//    ASSERT_EQ(sequential_mult, parallel_mult);
-//}
+TEST(Parallel_Operations_TBB, Test_Sort_With_10000_Only_Positive_Elements) {
+    int size = 10000;
+    std::vector<double> vec1 = getRandomVector(size, 1, 20);
+    std::vector<double> firstPart = vec1;
+    std::vector<double> result;
+
+    result = radixSortParallOmp(firstPart, numParts);
+    std::sort(vec1.begin(), vec1.end());
+    for (int i = 0; i < vec1.size(); i++) {
+        ASSERT_EQ(vec1[i], result[i]);
+    }
+}
+
+TEST(Parallel_Operations_TBB, Test_Sort_With_10000_Only_Negative_Elements) {
+    int size = 10000;
+    std::vector<double> vec1 = getRandomVector(size, -100, -10);
+    std::vector<double> firstPart = vec1;
+    std::vector<double> result;
+
+    result = radixSortParallOmp(firstPart, numParts);
+    std::sort(vec1.begin(), vec1.end());
+    for (int i = 0; i < vec1.size(); i++) {
+        ASSERT_EQ(vec1[i], result[i]);
+    }
+}
+
+
+TEST(Parallel_Operations_TBB, Test_Sort_With_100000_Positive_and_Negative_Elements) {
+    int size = 100000;
+    std::vector<double> vec1 = getRandomVector(size, -100, 100);
+    std::vector<double> firstPart = vec1;
+    std::vector<double> result;
+
+    result = radixSortParallOmp(firstPart, numParts);
+    std::sort(vec1.begin(), vec1.end());
+    for (int i = 0; i < vec1.size(); i++) {
+        ASSERT_EQ(vec1[i], result[i]);
+    }
+}
+
+TEST(Parallel_Operations_TBB, Test_Sort_With_1000000_Elements_But_Vector_Already_Sorted) {
+    int size = 1000000;
+    std::vector<double> vec1 = getRandomVector(size, -10, 10);
+    std::vector<double> firstPart = vec1;
+    std::vector<double> result;
+
+    std::sort(vec1.begin(), vec1.end());
+    result = radixSortParallOmp(vec1, numParts);
+    for (int i = 0; i < vec1.size(); i++) {
+        ASSERT_EQ(vec1[i], result[i]);
+    }
+}
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
