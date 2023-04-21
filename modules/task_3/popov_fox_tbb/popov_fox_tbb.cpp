@@ -42,8 +42,8 @@ Matrix foxMultiply(const Matrix& X, const Matrix& Y) {
   if (!square(X) || !square(Y)) throw("Matrix isn't square");
   if (!isMultiply(X, Y)) throw("Incorrect size of matrix");
 
-  tbb::task_arena init;
-  auto numThreads = init.automatic;
+  tbb::task_arena ta;
+  auto numThreads = ta.max_concurrency();
 
   int n = X.size();
   int q = std::sqrt(numThreads);
