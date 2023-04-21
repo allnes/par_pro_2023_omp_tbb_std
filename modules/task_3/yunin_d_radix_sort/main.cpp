@@ -3,7 +3,6 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <chrono>
 #include "../../../modules/task_3/yunin_d_radix_sort/yunin_d_radix_sort.h"
 
 const int numParts = 4;
