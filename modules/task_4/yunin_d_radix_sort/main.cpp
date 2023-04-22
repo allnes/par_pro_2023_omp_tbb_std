@@ -1,6 +1,7 @@
 // Copyright 2023 Yunin Daniil
 #include <gtest/gtest.h>
 #include <vector>
+#include <algorithm>
 #include "../../../3rdparty/unapproved/unapproved.h"
 #include "./yunin_d_radix_sort.h"
 

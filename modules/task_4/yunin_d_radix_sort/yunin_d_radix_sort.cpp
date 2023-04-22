@@ -7,73 +7,6 @@
 #include "../../../modules/task_4/yunin_d_radix_sort/yunin_d_radix_sort.h"
 #include "../../../3rdparty/unapproved/unapproved.h"
 
-std::vector<int> getRandomVector(int  sz) {
-    std::random_device dev;
-    std::mt19937 gen(dev());
-    std::vector<int> vec(sz);
-    for (int  i = 0; i < sz; i++) { vec[i] = gen() % 100; }
-    return vec;
-}
-
-std::mutex my_mutex;
-
-void atomOps(std::vector<int> vec, const std::string& ops, std::promise<int> &&pr) {
-    const int  sz = vec.size();
-    int reduction_elem = 0;
-    if (ops == "+") {
-        for (int  i = 0; i < sz; i++) {
-            std::lock_guard<std::mutex> my_lock(my_mutex);
-            reduction_elem += vec[i];
-        }
-    } else if (ops == "-") {
-        for (int  i = 0; i < sz; i++) {
-            std::lock_guard<std::mutex> my_lock(my_mutex);
-            reduction_elem -= vec[i];
-        }
-    }
-    pr.set_value(reduction_elem);
-}
-
-
-
-int getParallelOperations(std::vector<int> vec, const std::string& ops) {
-    const int nthreads = std::thread::hardware_concurrency();
-    const int delta = (vec.end() - vec.begin()) / nthreads;
-
-    std::promise<int> *promises = new std::promise<int>[nthreads];
-    std::future<int> *futures = new std::future<int>[nthreads];
-    std::thread *threads = new std::thread[nthreads];
-
-    int reduction_elem = 0;
-    for (int i = 0; i < nthreads; i++) {
-        futures[i] = promises[i].get_future();
-        std::vector<int> tmp_vec(
-            vec.begin() + i * delta,
-            vec.begin() + (i + 1) * delta);
-        threads[i] = std::thread(atomOps, tmp_vec, ops, std::move(promises[i]));
-        threads[i].join();
-        reduction_elem += futures[i].get();
-    }
-
-    delete []promises;
-    delete []futures;
-    delete []threads;
-    return reduction_elem;
-}
-
-int getSequentialOperations(std::vector<int> vec, const std::string& ops) {
-    const int  sz = vec.size();
-    int reduction_elem = 0;
-    if (ops == "+") {
-        for (int  i = 0; i < sz; i++) {
-            reduction_elem += vec[i];
-        }
-    } else if (ops == "-") {
-        for (int  i = 0; i < sz; i++) {
-            reduction_elem -= vec[i];
-        }
-    }
-    return reduction_elem;
 }void printVector(const std::vector<double>& vec) {
     for (int i = 0; i < vec.size(); i++) {
         std::cout << vec[i] << " ";
@@ -113,8 +46,7 @@ std::vector<double> merge(const std::vector<double>& arr1,
         if (arr1[indexFirst] > arr2[indexSecond]) {
             out[i] = arr2[indexSecond];
             indexSecond++;
-        }
-        else if (arr1[indexFirst] <= arr2[indexSecond]) {
+        } else if (arr1[indexFirst] <= arr2[indexSecond]) {
             out[i] = arr1[indexFirst];
             indexFirst++;
         }
@@ -172,8 +104,7 @@ bool countSortFinalStep(double* in, double* out, int len) {
             out[i] = in[j];
             if (flag) {
                 j++;
-            }
-            else {
+            } else {
                 j--;
             }
             if (j == firstNegativeIndex - 1 && !flag) {
@@ -236,7 +167,7 @@ std::vector<std::vector<double>> splitVector(const std::vector<double>& data, in
 std::vector<double> radixSortParallOmp(const std::vector<double>& data, int numParts) {
     std::vector<std::vector<double>> vectorsForParallel = splitVector(data, numParts);
     std::vector<double> finalResult;
-     //auto start1 = std::chrono::high_resolution_clock::now();
+     // auto start1 = std::chrono::high_resolution_clock::now();
 
     std::vector<std::thread> threads;
     for (int i = 0; i < vectorsForParallel.size(); i++) {
@@ -249,9 +180,9 @@ std::vector<double> radixSortParallOmp(const std::vector<double>& data, int numP
         thread.join();
     }
 
-     //auto stop1 = std::chrono::high_resolution_clock::now();
-     //auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
-     //std::cout << "duration_std: " << duration1.count() << '\n';
+     // auto stop1 = std::chrono::high_resolution_clock::now();
+     // auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
+     // std::cout << "duration_std: " << duration1.count() << '\n';
     for (int i = 0; i < vectorsForParallel.size(); i++) {
         finalResult = merge(finalResult, vectorsForParallel[i]);
     }
