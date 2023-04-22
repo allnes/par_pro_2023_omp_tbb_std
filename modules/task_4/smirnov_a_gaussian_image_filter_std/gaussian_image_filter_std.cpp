@@ -11,7 +11,7 @@ vector<intensityType> genImage(int rows, int columns) {
   return image;
 }
 
-vector<intensityType> gaussianFilterTBBParallel(const vector<intensityType>& image,
+vector<intensityType> gaussianFilterSTDParallel(const vector<intensityType>& image,
   int rows, int columns, int countThreads) {
   if (image.size() != rows * columns)
     throw std::string("Error with values rows or columns");
