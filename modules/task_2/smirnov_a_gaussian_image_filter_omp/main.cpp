@@ -1,6 +1,7 @@
 // Copyright 2023 Smirnov Andrew
 #include <gtest/gtest.h>
-#include "../../task_2/smirnov_a_gaussian_image_filter_omp/gaussian_image_filter_omp.h"
+#include "../../../modules/task_2/smirnov_a_gaussian_image_filter_omp/gaussian_image_filter_omp.h"
+
 
 TEST(ParallelOMP, No_throw_when_empty_image) {
   const int countRows = 0;

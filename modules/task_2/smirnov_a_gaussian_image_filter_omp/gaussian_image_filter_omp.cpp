@@ -1,5 +1,5 @@
 // Copyright 2023 Smirnov Andrew
-#include "../../task_2/smirnov_a_gaussian_image_filter_omp/gaussian_image_filter_omp.h"
+#include "../../../modules/task_2/smirnov_a_gaussian_image_filter_omp/gaussian_image_filter_omp.h"
 
 vector<intensityType> genImage(int rows, int columns) {
   std::random_device dev;
@@ -16,16 +16,12 @@ vector<intensityType> gaussianFilterOmpParallel(const vector<intensityType>& ima
   vector<intensityType> resultImage(rows * columns);
   char radius = kernelSize / 2;
 #pragma omp parallel for
-  for (int i = 0; i < rows; ++i)
-  {
-    for (int j = 0; j < columns; ++j)
-    {
+  for (int i = 0; i < rows; ++i) {
+    for (int j = 0; j < columns; ++j) {
       int curPixIntens = 0;
       char gausMatrixIndex = 0;
-      for (int xKernel = -radius; xKernel <= radius; ++xKernel)
-      {
-        for (int yKernel = -radius; yKernel <= radius; ++yKernel)
-        {
+      for (int xKernel = -radius; xKernel <= radius; ++xKernel) {
+        for (int yKernel = -radius; yKernel <= radius; ++yKernel) {
           int neighboorPixelX = std::max(0, std::min(i + xKernel, rows - 1));
           int neighboorPixelY = std::max(0, std::min(j + yKernel, columns - 1));
           curPixIntens += image[neighboorPixelX * columns + neighboorPixelY]
