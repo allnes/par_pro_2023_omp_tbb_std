@@ -1,5 +1,6 @@
 // Copyright 2023 Smirnov Andrew
 #include "../../../modules/task_3/smirnov_a_gaussian_image_filter_tbb/gaussian_image_filter_tbb.h"
+#include "tbb/tbb.h"
 
 vector<intensityType> genImage(int rows, int columns) {
   std::random_device dev;
@@ -23,8 +24,8 @@ vector<intensityType> gaussianFilterTBBParallel(const vector<intensityType>& ima
         char gausMatrixIndex = 0;
         for (int xKernel = -radius; xKernel <= radius; ++xKernel) {
           for (int yKernel = -radius; yKernel <= radius; ++yKernel) {
-            int neighboorPixelX = std::max(0, std::min(i + xKernel, rows - 1));
-            int neighboorPixelY = std::max(0, std::min(j + yKernel, columns - 1));
+            int neighboorPixelX = max(0, min(i + xKernel, rows - 1));
+            int neighboorPixelY = max(0, min(j + yKernel, columns - 1));
             curPixIntens += image[neighboorPixelX * columns + neighboorPixelY]
               * kernel[gausMatrixIndex];
             gausMatrixIndex++;

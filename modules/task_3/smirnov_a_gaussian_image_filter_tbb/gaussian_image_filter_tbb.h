@@ -5,10 +5,11 @@
 #include <algorithm>
 #include <random>
 #include <vector>
-#include "tbb/tbb.h"
 
 using std::vector;
 using intensityType = unsigned char;
+using std::max;
+using std::min;
 
 const vector<intensityType> kernel{ 1, 2, 1, 2, 4, 2, 1, 2, 1 };
 const intensityType kernelSum = 16;
