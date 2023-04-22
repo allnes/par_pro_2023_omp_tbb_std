@@ -13,6 +13,8 @@ vector<intensityType> genImage(int rows, int columns) {
 
 vector<intensityType> gaussianFilterOmpParallel(const vector<intensityType>& image,
   int rows, int columns) {
+  if (image.size() != rows * columns)
+    throw std::string("Error with values rows or columns");
   vector<intensityType> resultImage(rows * columns);
   char radius = kernelSize / 2;
 #pragma omp parallel for
