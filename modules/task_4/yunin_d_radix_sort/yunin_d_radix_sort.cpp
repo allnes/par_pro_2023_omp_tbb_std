@@ -7,7 +7,7 @@
 #include "../../../modules/task_4/yunin_d_radix_sort/yunin_d_radix_sort.h"
 #include "../../../3rdparty/unapproved/unapproved.h"
 
-}void printVector(const std::vector<double>& vec) {
+void printVector(const std::vector<double>& vec) {
     for (int i = 0; i < vec.size(); i++) {
         std::cout << vec[i] << " ";
     }
@@ -113,8 +113,7 @@ bool countSortFinalStep(double* in, double* out, int len) {
             }
         }
         return true;
-    }
-    else if (!positiveFlag) {
+    } else if (!positiveFlag) {
         for (int i = len - 1, j = 0; i >= 0; i--, j++) {
             out[j] = in[i];
         }
