@@ -3,9 +3,9 @@
 #define MODULES_TASK_3_SMIRNOV_A_GAUSSIAN_IMAGE_FILTER_TBB_GAUSSIAN_IMAGE_FILTER_TBB_H_
 
 #include <vector>
-#include <iostream>
 #include <random>
 #include <algorithm>
+#include <iostream>
 #include <tbb/tbb.h>
 
 using std::vector;

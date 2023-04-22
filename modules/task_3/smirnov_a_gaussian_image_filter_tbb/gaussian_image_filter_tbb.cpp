@@ -1,5 +1,5 @@
 // Copyright 2023 Smirnov Andrew
-#include "../../../modules/task_3/smirnov_a_gaussian_image_filter_tbb/smirnov_a_gaussian_image_filter_tbb.h"
+#include "../../../modules/task_3/smirnov_a_gaussian_image_filter_tbb/gaussian_image_filter_tbb.h"
 
 vector<intensityType> genImage(int rows, int columns) {
   std::random_device dev;

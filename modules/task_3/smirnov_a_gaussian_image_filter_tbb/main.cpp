@@ -1,6 +1,6 @@
 // Copyright 2023 Smirnov Andrew
 #include <gtest/gtest.h>
-#include "../../../modules/task_3/smirnov_a_gaussian_image_filter_tbb/smirnov_a_gaussian_image_filter_tbb.h"
+#include "../../../modules/task_3/smirnov_a_gaussian_image_filter_tbb/gaussian_image_filter_tbb.h"
 
 TEST(TBB_parallel, No_throw_when_empty_image) {
   const int countRows = 0;
