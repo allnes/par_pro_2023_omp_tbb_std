@@ -1,8 +1,8 @@
 // Copyright 2023 Zagrebin S.
 
 #include <list>
-#include <thread>
 // #include <random>
+#include "../../../3rdparty/unapproved/unapproved.h"
 #include "../../../modules/task_4/zagrebin_s_ccs_mult/ccs_mult.h"
 
 CCS::CCS(size_t n, size_t m): shape{n, m}, offset(m+1) {}
@@ -120,7 +120,7 @@ CCS mult(const CCS& _l, const CCS& r) {
         }));
     }
 
-    for(auto &t : v)
+    for (auto &t : v)
         t.join();
 
     size_t offset = 0;
