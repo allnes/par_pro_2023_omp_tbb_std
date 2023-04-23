@@ -44,7 +44,8 @@ Image random_image(int w, int h) {
     std::mt19937 mt_gen(rnd_device());
     for (int y = 0; y < res.size(); y++) {
         for (int x = 0; x < res[0].size(); x++) {
-            res[y][x] = { mt_gen() % 256, mt_gen() % 256, mt_gen() % 256 };
+            res[y][x] = { static_cast<int>(mt_gen()) % 256,
+            static_cast<int>(mt_gen()) % 256, static_cast<int>(mt_gen()) % 256 };
         }
     }
     return res;

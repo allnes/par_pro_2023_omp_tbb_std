@@ -1,7 +1,7 @@
 // Copyright 2023 Krainev Alexander
 #include <gtest/gtest.h>
 #include "./sobel_operator_omp.h"
-#include <chrono>
+
 TEST(OMP_Sobel, Empty_Image) {
     Image image = white_image(15, 15);
     Image excected = black_image(15, 15);
