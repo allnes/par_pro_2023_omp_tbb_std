@@ -3,6 +3,7 @@
 #ifndef MODULES_TASK_3_BUSKO_P_OPERATOR_SOBELYA_OPERATOR_SOBELYA_H_
 #define MODULES_TASK_3_BUSKO_P_OPERATOR_SOBELYA_OPERATOR_SOBELYA_H_
 
+#include <tbb/parallel_for.h>
 #include <vector>
 #include <random>
 
