@@ -72,6 +72,6 @@ double simpson_method_omp(std::vector<std::tuple<double, double, int>> scopes,
             result += loc_result;
         }
     }
-    
+
     return main_coef * result;
 }
