@@ -3,7 +3,7 @@
 #ifndef MODULES_TASK_3_ZAGREBIN_S_CCS_MULT_CCS_MULT_H_
 #define MODULES_TASK_3_ZAGREBIN_S_CCS_MULT_CCS_MULT_H_
 
-#include "tbb/parallel_for.h"
+#include <tbb/parallel_for.h>
 #include <iostream>
 #include <complex>
 #include <random>
