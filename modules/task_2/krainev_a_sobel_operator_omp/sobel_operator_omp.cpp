@@ -1,6 +1,7 @@
 // Copyright 2023 Krainev Alexander
 #include <omp.h>
 #include <math.h>
+#include <algorithm>
 #include "../../../modules/task_2/krainev_a_sobel_operator_omp/sobel_operator_omp.h"
 
 static std::vector<std::vector<int>> sobel_kernel = {
