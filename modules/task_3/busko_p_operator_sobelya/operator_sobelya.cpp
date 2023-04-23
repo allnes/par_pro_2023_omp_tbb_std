@@ -1,6 +1,6 @@
 // Copyright 2023 Busko Polina
 
-#include <tbb/tbb.h>
+#include <tbb/parallel_for.h>
 #include <iostream>
 #include <cmath>
 #include <algorithm>

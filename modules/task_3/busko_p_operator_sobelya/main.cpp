@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include "./operator_sobelya.h"
+
 TEST(SobelFilterTBB, matrix_100_on_100) {
     int size = 100;
     Img image(size, size, 1);
