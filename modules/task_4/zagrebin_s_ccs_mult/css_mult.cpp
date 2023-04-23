@@ -102,7 +102,7 @@ inline Comp mult(it i, it a, it j, it b) {
 CCS mult(const CCS& _l, const CCS& r) {
     CCS res(_l.shape[0], r.shape[1]);
     CCS l(_l.T());
-    std::list<CCS::elem> tmp[res.shape[1]];
+    std::vector<std::list<CCS::elem>> tmp(res.shape[1]);
     std::vector<std::thread> v;
 
     res.offset[0] = 0;
