@@ -105,8 +105,3 @@ TEST(SobelFilterTBB, random_matrix_1000_on_1000) {
 
     ASSERT_EQ(seq_answer, parallel_answer);
 }
-
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
