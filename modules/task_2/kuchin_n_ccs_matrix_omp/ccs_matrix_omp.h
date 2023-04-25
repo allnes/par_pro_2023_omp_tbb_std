@@ -12,4 +12,5 @@ struct SparceMatrix {
 
 SparceMatrix transport(SparceMatrix A);
 SparceMatrix multiply(SparceMatrix A, SparceMatrix B);
+SparceMatrix parmultiply(SparceMatrix A, SparceMatrix B);
 #endif  // MODULES_TASK_2_KUCHIN_N_CCS_MATRIX_OMP_CCS_MATRIX_OMP_H_
