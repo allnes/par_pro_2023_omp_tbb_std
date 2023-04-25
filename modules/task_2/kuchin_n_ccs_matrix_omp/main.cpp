@@ -5,7 +5,6 @@
 #include <cmath>
 
 #include "./ccs_matrix_omp.h"
-#include "./ccs_matrix_omp.cpp"
 
 TEST(Omp, test1) {
     SparceMatrix A;
