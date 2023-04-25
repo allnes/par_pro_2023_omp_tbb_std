@@ -5,6 +5,7 @@
 #include <omp.h>
 
 #include <cmath>
+#include <vector>
 
 SparceMatrix transport(SparceMatrix A) {
     SparceMatrix AT;
