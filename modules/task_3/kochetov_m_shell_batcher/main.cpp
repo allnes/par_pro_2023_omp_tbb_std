@@ -2,14 +2,14 @@
 #include <gtest/gtest.h>
 #include "./shell_batcher.h"
 
-TEST(Shell_batcher_OMP, Test1Empty) {
+TEST(Shell_batcher_TBB, Test1Empty) {
     std::size_t vecLength = 0;
     std::vector<int> emptyVec(vecLength);
     ShellsortParallel(&emptyVec);
     EXPECT_EQ(emptyVec.size(), 0);
 }
 
-TEST(Shell_batcher_OMP, Test2One) {
+TEST(Shell_batcher_TBB, Test2One) {
     std::size_t vecLength = 1;
     std::vector<int> oneElementVec({ 5 });
     ShellsortParallel(&oneElementVec);
@@ -17,7 +17,7 @@ TEST(Shell_batcher_OMP, Test2One) {
     EXPECT_EQ(oneElementVec[0], 5);
 }
 
-TEST(Shell_batcher_OMP, Test3Random30) {
+TEST(Shell_batcher_TBB, Test3Random30) {
     std::size_t vecLength = 30;
     std::vector<int> vec = GetRandomVec(vecLength);
     std::vector<int> rightAnswer(vec);
@@ -26,7 +26,7 @@ TEST(Shell_batcher_OMP, Test3Random30) {
     EXPECT_EQ(vec, rightAnswer);
 }
 
-TEST(Shell_batcher_OMP, Test4Random100) {
+TEST(Shell_batcher_TBB, Test4Random100) {
     std::size_t vecLength = 100;
     std::vector<int> vec = GetRandomVec(vecLength);
     std::vector<int> rightAnswer(vec);
@@ -35,7 +35,7 @@ TEST(Shell_batcher_OMP, Test4Random100) {
     EXPECT_EQ(vec, rightAnswer);
 }
 
-TEST(Shell_batcher_OMP, Test5Random3000) {
+TEST(Shell_batcher_TBB, Test5Random3000) {
     std::size_t vecLength = 3000;
     std::vector<int> vec = GetRandomVec(vecLength);
     std::vector<int> rightAnswer(vec);
@@ -44,7 +44,7 @@ TEST(Shell_batcher_OMP, Test5Random3000) {
     EXPECT_EQ(vec, rightAnswer);
 }
 
-/* TEST(Shell_batcher_OMP, Test6Random2000000) {
+/* TEST(Shell_batcher_TBB, Test6Random2000000) {
     std::size_t vecLength = 2000000;
     std::vector<int> vec = GetRandomVec(vecLength);
     std::vector<int> rightAnswer(vec);
