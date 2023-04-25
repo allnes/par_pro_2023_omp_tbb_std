@@ -86,12 +86,12 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
 }
 
 SparceMatrix parmultiply(SparceMatrix A, SparceMatrix B) {
-    int ths = omp_get_num_procs();
+    // int ths = omp_get_num_procs();
     SparceMatrix C;
     std::vector<double> temp(A.col_ptr.size() - 1);
     for (int j = 0; j < B.col_ptr.size() - 1; j++) {
         fill(temp.begin(), temp.end(), 0);
-#pragma omp parallel for
+        // #pragma omp parallel for
         for (int k = B.col_ptr[j]; k < B.col_ptr[j + 1]; k++) {
             int row = B.row_id[k];
             double val = B.data[k];
