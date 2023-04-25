@@ -118,6 +118,7 @@ TEST(Omp, test4) {
     EXPECT_EQ(C.col_ptr, res.col_ptr);
     EXPECT_EQ(C.row_id, res1.row_id);
     EXPECT_EQ(C.col_ptr, res1.col_ptr);
+    
 }
 TEST(Omp, test5) {
     SparceMatrix A;
