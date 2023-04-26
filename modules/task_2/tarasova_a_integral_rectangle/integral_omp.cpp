@@ -1,7 +1,7 @@
 // Copyright 2023 Tarasova Anastasiya
-#include "../../../modules/task_2/tarasova_a_integral_rectangle/integral_omp.h"
-#include <vector>
 #include <omp.h>
+#include <vector>
+#include "../../../modules/task_2/tarasova_a_integral_rectangle/integral_omp.h"
 
 double getParallel(const double& a1, const double& a2, const double& a3, const double& b1,
     const double& b2, const double& b3, const double& h, double (*f)(double, double, double)) {

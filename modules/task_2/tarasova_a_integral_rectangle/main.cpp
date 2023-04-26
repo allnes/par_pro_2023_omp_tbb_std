@@ -1,7 +1,7 @@
 // Copyright 2023 Tarasova Anastasiya
+#include <gtest/gtest.h>
 #include <vector>
 #include "./integral_omp.h"
-#include <gtest/gtest.h>
 
 double f1(double x, double y, double z) {
     return x + y + z;
