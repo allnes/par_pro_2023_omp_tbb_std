@@ -27,8 +27,7 @@ double getParallel(const double& a1, const double& a2, const double& a3, const d
         z = a3 + i * h + h / 2;
         z1[i] = z;
     }
-#pragma omp parallel for private (x, y, z, k)
-/ reduction(+:sum)
+#pragma omp parallel for private (x, y, z, k)/reduction(+:sum)
     for (i = 0; i < n1; i++)
         for (j = 0; j < n2; j++)
             for (k = 0; k < n3; k++) {
