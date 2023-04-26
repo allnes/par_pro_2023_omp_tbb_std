@@ -56,7 +56,7 @@ matrix omp_multiply(const matrix& A, const matrix& B, int thread_by_dim) {
     }
     matrix result(A.size(), std::vector<double>(B[0].size()));
 
-    int p = A.size() / td; // portion
+    int p = A.size() / td;  // portion
 #pragma omp parallel num_threads(td * td)
     {
         int tid = omp_get_thread_num();
