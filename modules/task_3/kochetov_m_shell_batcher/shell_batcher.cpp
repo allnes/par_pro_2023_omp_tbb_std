@@ -6,37 +6,30 @@ std::vector<int> GetRandomVec(int length) {
     std::mt19937 engine(rndDev());
     std::uniform_int_distribution<> dist(1, 100);
     std::vector<int> vec(length);
-    for (int i = 0; i < length; i++)
-        vec[i] = dist(engine);
+    for (int i = 0; i < length; i++) vec[i] = dist(engine);
     return vec;
 }
 
 void PrintVec(int* vec, int n) {
-    for (int i = 0; i < n; i++)
-        std::cout << vec[i] << " ";
+    for (int i = 0; i < n; i++) std::cout << vec[i] << " ";
     std::cout << std::endl;
 }
 
-void PrintVec(std::vector<int> vec) {
-    PrintVec(vec.data(), vec.size());
-}
+void PrintVec(std::vector<int> vec) { PrintVec(vec.data(), vec.size()); }
 
 bool Is2Power(int number) {
-    if (number <= 0)
-        return false;
+    if (number <= 0) return false;
     return ((number - 1) & number) == 0;
 }
 
 bool What2Power(int number) {
     int power = 0;
-    while (number != 1)
-        power++, number /= 2;
+    while (number != 1) power++, number /= 2;
     return power;
 }
 
 void ShellsortSeq(int* vec, std::size_t n) {
-    if (n <= 1)
-        return;
+    if (n <= 1) return;
 
     for (size_t gap = n / 2; gap > 0; gap /= 2) {
         for (size_t i = gap; i < n; i += 1) {
@@ -51,7 +44,7 @@ void ShellsortSeq(int* vec, std::size_t n) {
     }
 }
 
-void BatcherOddOrEvenMerge(int *partStartPtr, int partSize, bool isOdd) {
+void BatcherOddOrEvenMerge(int* partStartPtr, int partSize, bool isOdd) {
     std::vector<int> tmp;
     tmp.reserve(partSize);
 
@@ -84,8 +77,7 @@ void BatcherOddOrEvenMerge(int *partStartPtr, int partSize, bool isOdd) {
     int k = 0;
     if (isOdd) k++;
 
-    for (int t = 0; t != tmp.size(); k += 2, t += 1)
-        partStartPtr[k] = tmp[t];
+    for (int t = 0; t != tmp.size(); k += 2, t += 1) partStartPtr[k] = tmp[t];
 }
 
 struct UniversalFunctor {
@@ -99,37 +91,38 @@ struct UniversalFunctor {
         this->taskId = taskId;
     }
 
-    void operator() (const tbb::blocked_range<size_t>& range) const {
-        if (taskId == 0)
+    void operator()(const tbb::blocked_range<size_t>& range) const {
+        if (taskId == 0) {
             for (size_t i = range.begin(); i < range.end(); i++) {
                 ShellsortSeq(vec + i * partSize, partSize);
             }
-        else if (taskId == 1)
+        } else if (taskId == 1) {
             for (size_t i = range.begin(); i < range.end(); i++) {
                 int j = (i % 2 == 0) ? i / 2 : (i - 1) / 2;
                 bool isOdd = (i % 2 == 1);
-                int *partStartPtr = vec + (partSize * 2) * j;
+                int* partStartPtr = vec + (partSize * 2) * j;
                 BatcherOddOrEvenMerge(partStartPtr, partSize, isOdd);
             }
-        else
+        } else {
             for (size_t i = range.begin(); i < range.end(); i++) {
                 int j = (i % 2 == 0) ? i / 2 : (i - 1) / 2;
                 int bPartSize = (partSize * 2);
-                int *partStartPtr = vec + bPartSize * j;
+                int* partStartPtr = vec + bPartSize * j;
                 for (int k = 1; k <= bPartSize - 3; k++) {
                     if (partStartPtr[k + 1] < partStartPtr[k]) {
                         std::swap(partStartPtr[k + 1], partStartPtr[k]);
                     }
                 }
             }
+        }
     }
 };
 
 void BatcherParallelMerge(int* vec, int partSize, int partsCount) {
     tbb::parallel_for(tbb::blocked_range<size_t>(0, partsCount),
-        UniversalFunctor(vec, partSize, 1));
+                      UniversalFunctor(vec, partSize, 1));
     tbb::parallel_for(tbb::blocked_range<size_t>(0, partsCount, 2),
-        UniversalFunctor(vec, partSize, 2));
+                      UniversalFunctor(vec, partSize, 2));
 }
 
 void ShellsortParallel(std::vector<int>* vecPtr) {
@@ -149,7 +142,6 @@ void ShellsortParallel(std::vector<int>* vecPtr) {
 
     UniversalFunctor functor(vecPtr->data(), partSize, 0);
     tbb::parallel_for(tbb::blocked_range<size_t>(0, partsCount), functor);
-
 
     while (vecPtr->size() / partSize != 1) {
         BatcherParallelMerge(vecPtr->data(), partSize, partsCount);
