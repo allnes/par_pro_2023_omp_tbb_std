@@ -120,9 +120,8 @@ std::vector<SPoint> ompJarvis(const std::vector<SPoint>& points) {
     {
       if (localStart.y < start.y)
         start = localStart;
-      else if (localStart.y == start.y && localStart.x < start.x) {
+      else if (localStart.y == start.y && localStart.x < start.x)
         start = localStart;
-      }
     }
   }
   std::vector<SPoint> result;
