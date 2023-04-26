@@ -1,6 +1,6 @@
 // Copyright 2023 Kuchin Nikita
 
-#include "../../../modules/task_2/kuchin_n_ccs_matrix_tbb/ccs_matrix_tbb.h"
+#include "../../../modules/task_3/kuchin_n_ccs_matrix_tbb/ccs_matrix_tbb.h"
 
 #include <tbb/tbb.h>
 

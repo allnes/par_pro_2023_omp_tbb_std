@@ -1,6 +1,6 @@
 // Copyright 2023 Kuchin Nikita
-#ifndef MODULES_TASK_2_KUCHIN_N_CCS_MATRIX_TBB_CCS_MATRIX_TBB_H_
-#define MODULES_TASK_2_KUCHIN_N_CCS_MATRIX_TBB_CCS_MATRIX_TBB_H_
+#ifndef MODULES_TASK_3_KUCHIN_N_CCS_MATRIX_TBB_CCS_MATRIX_TBB_H_
+#define MODULES_TASK_3_KUCHIN_N_CCS_MATRIX_TBB_CCS_MATRIX_TBB_H_
 
 #include <vector>
 struct SparceMatrix {
@@ -13,4 +13,4 @@ struct SparceMatrix {
 SparceMatrix transport(SparceMatrix A);
 SparceMatrix multiply(SparceMatrix A, SparceMatrix B);
 SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B);
-#endif  // MODULES_TASK_2_KUCHIN_N_CCS_MATRIX_TBB_CCS_MATRIX_TBB_H_
+#endif  // MODULES_TASK_3_KUCHIN_N_CCS_MATRIX_TBB_CCS_MATRIX_TBB_H_
