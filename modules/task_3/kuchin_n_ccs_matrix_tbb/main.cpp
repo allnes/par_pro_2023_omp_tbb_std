@@ -6,7 +6,7 @@
 
 #include "./ccs_matrix_tbb.h"
 
-TEST(Omp, test1) {
+TEST(Tbb, test1) {
     SparceMatrix A;
     A.n = 3;
     A.data = {1.2, 3.4, 5.1};
@@ -34,7 +34,7 @@ TEST(Omp, test1) {
     EXPECT_EQ(C.col_ptr, res1.col_ptr);
 }
 
-TEST(Omp, test2) {
+TEST(Tbb, test2) {
     SparceMatrix A;
     A.n = 4;
     A.data = {1.3, 7.5, 6.3, 2.1, 9.5};
@@ -64,7 +64,7 @@ TEST(Omp, test2) {
     EXPECT_EQ(C.col_ptr, res1.col_ptr);
 }
 
-TEST(Omp, test3) {
+TEST(Tbb, test3) {
     SparceMatrix A;
     A.n = 6;
     A.data = {1, 7, 3, 4, 2, 2, 5};
@@ -91,7 +91,7 @@ TEST(Omp, test3) {
     EXPECT_EQ(C.row_id, res1.row_id);
     EXPECT_EQ(C.col_ptr, res1.col_ptr);
 }
-TEST(Omp, test4) {
+TEST(Tbb, test4) {
     SparceMatrix A;
     A.n = 5;
     A.data = {8.85, 7.69, 2.56, 12.85, 19.47, 4.53, 15.81};
@@ -119,7 +119,7 @@ TEST(Omp, test4) {
     EXPECT_EQ(C.row_id, res1.row_id);
     EXPECT_EQ(C.col_ptr, res1.col_ptr);
 }
-TEST(Omp, test5) {
+TEST(Tbb, test5) {
     SparceMatrix A;
     A.n = 4;
     A.data = {1.5, 3.2, 8.7, 2.5, 3.3};
