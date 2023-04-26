@@ -7,9 +7,9 @@ double getParallel(const double& a1, const double& a2, const double& a3, const d
     const double& b2, const double& b3, const double& h, double (*f)(double, double, double)) {
     double sum = 0.0, x, y, z;
     int n1, n2, n3;
-    n1 = (int)((b1 - a1) / h);
-    n2 = (int)((b2 - a2) / h);
-    n3 = (int)((b3 - a3) / h);
+    n1 = static_cast<int>((b1 - a1) / h);
+    n2 = static_cast<int>((b2 - a2) / h);
+    n3 = static_cast<int>((b3 - a3) / h);
     std::vector<double> x1(n1), y1(n2), z1(n3);
 #pragma omp parallel for private (x)
     for (int i = 0; i < n1; i++) {
@@ -39,26 +39,19 @@ double getSequential(const double& a1, const double& a2, const double& a3, const
     const double& b2, const double& b3, const double& h, double (*f)(double, double, double)) {
     double sum = 0.0, x, y, z;
     int n1, n2, n3;
-    n1 = (int)((b1 - a1) / h);
-    n2 = (int)((b2 - a2) / h);
-    n3 = (int)((b3 - a3) / h);
+    n1 = static_cast<int>((b1 - a1) / h);
+    n2 = static_cast<int>((b2 - a2) / h);
+    n3 = static_cast<int>((b3 - a3) / h);
     std::vector<double> x1(n1), y1(n2), z1(n3);
-    for (int i = 0; i < n1; i++) {
-        x = a1 + i * h + h / 2;
-        x1[i] = x;
-    }
-    for (int i = 0; i < n2; i++) {
-        y = a2 + i * h + h / 2;
-        y1[i] = y;
-    }
-    for (int i = 0; i < n3; i++) {
-        z = a3 + i * h + h / 2;
-        z1[i] = z;
-    }
+    for (int i = 0; i < n1; i++)
+        x1[i] = a1 + i * h + h / 2;
+    for (int i = 0; i < n2; i++)
+        y1[i] = a2 + i * h + h / 2;
+    for (int i = 0; i < n3; i++)
+        z1[i] = a3 + i * h + h / 2;
     for (int i = 0; i < n1; i++)
         for (int j = 0; j < n2; j++)
-            for (int k = 0; k < n3; k++) {
+            for (int k = 0; k < n3; k++)
                 sum += f(x1[i], y1[j], z1[k]) * h * h * h;
-            }
     return sum;
 }
