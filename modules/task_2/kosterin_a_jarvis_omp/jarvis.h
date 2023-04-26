@@ -1,6 +1,6 @@
 // Copyright 2023 Kosterin Alexey
-#ifndef MODULES_TASK_1_KOSTERIN_A_JARVIS_OMP_JARVIS_H_
-#define MODULES_TASK_1_KOSTERIN_A_JARVIS_OMP_JARVIS_H_
+#ifndef MODULES_TASK_2_KOSTERIN_A_JARVIS_OMP_JARVIS_H_
+#define MODULES_TASK_2_KOSTERIN_A_JARVIS_OMP_JARVIS_H_
 #include <omp.h>
 #include <vector>
 #include <algorithm>
@@ -34,4 +34,4 @@ bool checkDistance(const SPoint& cur, const SPoint& next, const SPoint& tmp);
 bool ChekJarvis(std::vector<SPoint> jarArr);
 std::vector<SPoint> ompJarvis(const std::vector<SPoint>& points);
 
-#endif  // MODULES_TASK_1_KOSTERIN_A_JARVIS_OMP_JARVIS_H_
+#endif  // MODULES_TASK_2_KOSTERIN_A_JARVIS_OMP_JARVIS_H_
