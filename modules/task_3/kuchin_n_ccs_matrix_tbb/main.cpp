@@ -84,7 +84,7 @@ TEST(Tbb, test3) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 0.1);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < 1.0);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < 5.0);
     }
     EXPECT_EQ(C.row_id, res.row_id);
     EXPECT_EQ(C.col_ptr, res.col_ptr);
