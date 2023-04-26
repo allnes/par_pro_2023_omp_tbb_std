@@ -50,8 +50,6 @@ TEST(uvarkin_min_hull_convex, test3) {
 
   auto MinConvexHull = convex_hull();
   auto firstPoint = MinConvexHull.getFirstPoint(points);
-  std::cout << "points: " << converter.convertVectorToString(points) << std::endl;
-
   auto sortPointAct = MinConvexHull.sortPointByPolarAngle(points, firstPoint);
 
   std::vector<Vector> sortPointExp = {
