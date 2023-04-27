@@ -177,7 +177,7 @@ double d2_method_Openmp(
             for (i = 1; i <= N; i++) {
                 x = bounds[0].first + h_for_x * i;
                 y = bounds[1].first + h_for_y * i;
-                
+
                 #pragma omp critical {
                     result += 0.5 * (f({x, bounds[1].first}) +
                     f({x, bounds[1].second}));
