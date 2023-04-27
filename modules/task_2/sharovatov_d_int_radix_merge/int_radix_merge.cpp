@@ -58,7 +58,7 @@ std::vector<int> radixSortMerge(std::vector<int>* vec) {
   std::vector<int> result;
 
 #pragma omp parallel
-  { 
+  {
       int thread = omp_get_thread_num();
       int threadNum = omp_get_num_threads();
 
@@ -67,7 +67,7 @@ std::vector<int> radixSortMerge(std::vector<int>* vec) {
       int leftOffset = step * thread;
       int rightOffset = step * (thread + 1);
       if ((vecSize / threadNum != 0) && (thread == threadNum - 1)) {
-        rightOffset += vecSize - step * threadNum; 
+        rightOffset += vecSize - step * threadNum;
       }
       std::vector<int> localVec((*vec).begin() + leftOffset,
                                 (*vec).begin() + rightOffset);
