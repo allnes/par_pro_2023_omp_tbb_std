@@ -173,7 +173,7 @@ double d2_method_Openmp(
 
     double result = 0;
 
-        #pragma omp parallel for reduction(+: result)
+        #pragma omp parallel for private(x, y) reduction(+: result)
             for (i = 1; i <= N; i++) {
                 x = bounds[0].first + h_for_x * i;
                 y = bounds[1].first + h_for_y * i;
@@ -185,7 +185,7 @@ double d2_method_Openmp(
                 f({bounds[0].second, y}));
             }
 
-        #pragma omp parallel for collapse(2) reduction(+: result)
+        #pragma omp parallel for private(x, y) collapse(2) reduction(+: result)
             for (i = 1; i <= N; i++) {
                 for (j = 1; j <= N; j++) {
                     x = bounds[0].first + h_for_x * i;
@@ -225,7 +225,7 @@ double d3_method_Openmp(
 
     double result = 0;
 
-        #pragma omp parallel for reduction(+: result)
+        #pragma omp parallel for private(x, y, z) reduction(+: result)
             for (i = 1; i <= N; i++) {
                 x = bounds[0].first + h_for_x * i;
                 y = bounds[1].first + h_for_y * i;
@@ -244,7 +244,7 @@ double d3_method_Openmp(
                 f({bounds[0].second, bounds[1].second, z}));
             }
 
-        #pragma omp parallel for collapse(2) reduction(+: result)
+        #pragma omp parallel for private(x, y, z) collapse(2) reduction(+: result)
             for (i = 1; i <= N; i++) {
                 for (j = 1; j <= N; j++) {
                     x = bounds[0].first + h_for_x * i;
@@ -266,7 +266,7 @@ double d3_method_Openmp(
                 }
             }
 
-        #pragma omp parallel for collapse(3) reduction(+: result)
+        #pragma omp parallel for private(x, y, z) collapse(3) reduction(+: result)
             for (i = 1; i <= N; i++) {
                 for (j = 1; j <= N; j++) {
                     for (s = 1; s <= N; s++) {
