@@ -67,29 +67,6 @@ TEST(Sequential_Monte_Carlo, Three_Dims_Sub) {
     ASSERT_LE(error, precision);
 }
 
-/**
- * Efficiency test
- * Delete or comment when publishing to the main repository
- * Delete this commentary when publishing to the main repository
-*/
-// TEST(Sequential_Monte_Carlo, Time_Test) {
-//     std::vector<double> a = { 0.0, 0.0, 0.0 }, b = { 13.0, 13.0, 13.0 };
-//     int n = 240000000;
-
-//     double start = omp_get_wtime();
-//     double sequential = sequentialMonteCarlo(funcSub, a, b, n);
-//     double end = omp_get_wtime();
-//     std::cout << "Sequential implementation: " << end - start << std::endl;
-//     start = omp_get_wtime();
-//     double parallel = parallelMonteCarlo(funcSub, a, b, n);
-//     end = omp_get_wtime();
-//     std::cout << "Parallel implementation: " << end - start << std::endl;
-
-//     double error = std::abs(parallel - sequential) / parallel;
-
-//     ASSERT_LE(error, precision);
-// }
-
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
