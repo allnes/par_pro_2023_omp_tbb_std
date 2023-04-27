@@ -3,6 +3,7 @@
 
 #include <omp.h>
 
+#include <algorithm>
 #include <ctime>
 #include <map>
 #include <random>
@@ -15,10 +16,11 @@ void change(std::map<int, int>* mp, int first, int second) {
     } else if (second > (*mp)[first]) {
       change(mp, second, (*mp)[first]);
     }
-  } else
+  } else {
     (*mp)[first] = second;
+  }
 }
-void create_random_image(std::vector<std::vector<int>> *image) {
+void create_random_image(std::vector<std::vector<int>>* image) {
   std::mt19937 gen(time(0));
 
   for (int i = 0; i < (*image).size(); i++) {
@@ -27,7 +29,7 @@ void create_random_image(std::vector<std::vector<int>> *image) {
     }
   }
 }
-void marking(std::vector<std::vector<int>> * img) {
+void marking(std::vector<std::vector<int>>* img) {
   int label = 0;
   std::map<int, int> eq;
   int C;  // up
@@ -43,15 +45,15 @@ void marking(std::vector<std::vector<int>> * img) {
         C = 0;
       else
         C = (*img)[i - 1][j];
-      if ((B == 0 && C != 0) || (C == 0 && B != 0))
+      if ((B == 0 && C != 0) || (C == 0 && B != 0)) {
         (*img)[i][j] = std::max(B, C);
-      else if (B == 0 && C == 0) {
+      } else if (B == 0 && C == 0) {
         label++;
         (*img)[i][j] = label;
       } else if (B != 0 && C != 0) {
-        if (B == C)
+        if (B == C) {
           (*img)[i][j] = C;
-        else {
+        } else {
           (*img)[i][j] = std::min(B, C);
           change(&eq, std::max(B, C), std::min(B, C));
         }
