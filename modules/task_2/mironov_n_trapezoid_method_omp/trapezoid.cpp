@@ -174,7 +174,7 @@ double d2_method_Openmp(
     double result = 0;
 
         #pragma omp parallel for private(x, y) reduction(+: result)
-            for (i = 1; i <= N; i++) {
+            for (i = 1; i < N; i++) {
                 x = bounds[0].first + h_for_x * i;
                 y = bounds[1].first + h_for_y * i;
 
@@ -186,7 +186,7 @@ double d2_method_Openmp(
             }
 
         #pragma omp parallel for private(x, y) collapse(2) reduction(+: result)
-            for (i = 1; i <= N; i++) {
+            for (i = 1; i < N; i++) {
                 for (j = 1; j <= N; j++) {
                     x = bounds[0].first + h_for_x * i;
                     y = bounds[1].first + h_for_y * j;
@@ -226,7 +226,7 @@ double d3_method_Openmp(
     double result = 0;
 
         #pragma omp parallel for private(x, y, z) reduction(+: result)
-            for (i = 1; i <= N; i++) {
+            for (i = 1; i < N; i++) {
                 x = bounds[0].first + h_for_x * i;
                 y = bounds[1].first + h_for_y * i;
                 z = bounds[2].first + h_for_z * i;
@@ -245,8 +245,8 @@ double d3_method_Openmp(
             }
 
         #pragma omp parallel for private(x, y, z) collapse(2) reduction(+: result)
-            for (i = 1; i <= N; i++) {
-                for (j = 1; j <= N; j++) {
+            for (i = 1; i < N; i++) {
+                for (j = 1; j < N; j++) {
                     x = bounds[0].first + h_for_x * i;
                     y = bounds[1].first + h_for_y * i;
                     z = bounds[2].first + h_for_z * j;
@@ -267,9 +267,9 @@ double d3_method_Openmp(
             }
 
         #pragma omp parallel for private(x, y, z) collapse(3) reduction(+: result)
-            for (i = 1; i <= N; i++) {
-                for (j = 1; j <= N; j++) {
-                    for (s = 1; s <= N; s++) {
+            for (i = 1; i < N; i++) {
+                for (j = 1; j < N; j++) {
+                    for (s = 1; s < N; s++) {
                         x = bounds[0].first + h_for_x * i;
                         z = bounds[2].first + h_for_z * s;
                         y = bounds[1].first + h_for_y * j;
