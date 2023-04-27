@@ -54,7 +54,7 @@ TEST(trapezoid, d2_test_omp) {
     bounds[1] = {1, 4};
     int dimensions = 2;
     double integration_result = 825.0/4.0;
-    double method_result = trapezoid_method(f2, bounds, dimensions, 2500, true);
+    double method_result = trapezoid_method(f2, bounds, dimensions, 5000, true);
     double tolerance = 0.06;
 
     ASSERT_NEAR(method_result, integration_result, tolerance);
