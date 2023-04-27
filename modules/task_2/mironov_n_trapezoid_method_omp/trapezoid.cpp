@@ -178,13 +178,13 @@ double d2_method_Openmp(
                 x = bounds[0].first + h_for_x * i;
                 y = bounds[1].first + h_for_y * i;
 
-                #pragma omp critical {
+                #pragma omp critical
                     result += 0.5 * (f({x, bounds[1].first}) +
                     f({x, bounds[1].second}));
 
+                #pragma omp critical
                     result += 0.5 * (f({bounds[0].first, y}) +
                     f({bounds[0].second, y}));
-                }
             }
 
         #pragma omp parallel for private(x, y) collapse(2) reduction(+: result)
@@ -193,9 +193,8 @@ double d2_method_Openmp(
                     x = bounds[0].first + h_for_x * i;
                     y = bounds[1].first + h_for_y * j;
 
-                    #pragma omp critical {
+                    #pragma omp critical
                         result += f({x, y});
-                    }
                 }
             }
 
@@ -235,19 +234,20 @@ double d3_method_Openmp(
                 y = bounds[1].first + h_for_y * i;
                 z = bounds[2].first + h_for_z * i;
 
-                #pragma omp critical {
+                #pragma omp critical
                     result += 0.25 *
                     (f({x, bounds[1].first, bounds[2].first}) +
                     f({x, bounds[1].second, bounds[2].second}));
 
+                #pragma omp critical
                     result += 0.25 *
                     (f({bounds[0].first, y, bounds[2].first}) +
                     f({bounds[0].second, y, bounds[2].second}));
 
+                #pragma omp critical
                     result += 0.25 *
                     (f({bounds[0].first, bounds[1].first, z}) +
                     f({bounds[0].second, bounds[1].second, z}));
-                }
             }
 
         #pragma omp parallel for private(x, y, z) collapse(2) reduction(+: result)
@@ -257,20 +257,19 @@ double d3_method_Openmp(
                     y = bounds[1].first + h_for_y * i;
                     z = bounds[2].first + h_for_z * j;
 
-                    #pragma omp critical {
+                    #pragma omp critical
                         result += 0.5 * (f({bounds[0].first, y, z}) +
                         f({bounds[0].second, y, z}));
 
+                    #pragma omp critical
                         result += 0.5 * (f({x, bounds[1].first, z}) +
                         f({x, bounds[1].second, z}));
-                    }
 
                     y = bounds[1].first + h_for_y * j;
 
-                    #pragma omp critical {
+                    #pragma omp critical
                         result += 0.5 * (f({x, y, bounds[2].first}) +
                         f({x, y, bounds[2].second}));
-                    }
 
                     y = bounds[1].first + h_for_y * i;
                 }
@@ -284,9 +283,8 @@ double d3_method_Openmp(
                         z = bounds[2].first + h_for_z * s;
                         y = bounds[1].first + h_for_y * j;
 
-                        #pragma omp critical {
+                        #pragma omp critical
                             result += f({x, y, z});
-                        }
                     }
                 }
             }
