@@ -95,10 +95,10 @@ std::vector<double> OMPGaussFilter(const std::vector<double>& matrix,
                 double Res = 0;
                 for (i = -Radius; i < Radius + 1; ++i) {
                     for (j = -Radius; j < Radius + 1; ++j) {
-                        int Idx = (i + Radius) * Size + j + Radius;				
+                        int Idx = (i + Radius) * Size + j + Radius;
                         int x_ = Clamp(x + j, m - 1, 0);
-                        int y_ = Clamp(y + i, n - 1, 0);				
-                        double value = matrix[x_ * n + y_];				
+                        int y_ = Clamp(y + i, n - 1, 0);
+                        double value = matrix[x_ * n + y_];
                         Res += value * Kernel[Idx];
                     }
                 }

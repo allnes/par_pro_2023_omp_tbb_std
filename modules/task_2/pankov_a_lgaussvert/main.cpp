@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Pankov Anatoliy
+// Copyright 2023 Pankov Anatoliy
 #include "../../../modules/task_2/pankov_a_lgaussvert/lgaussvert.h"
 
 TEST(LGaussVerticalOMP, MatrixMN0Test) {
@@ -22,8 +22,8 @@ TEST(LGaussVerticalOMP, RandomTest3x3) {
     int n = 3;
     std::vector<double> Matrix = MakeRandomMatrix(m, n);
 
-    std::vector <double> SeqResult = SeqGaussFilter(Matrix, n, m);
-    std::vector <double> OmpResult = OMPGaussFilter(Matrix, n, m);
+    std::vector<double> SeqResult = SeqGaussFilter(Matrix, n, m);
+    std::vector<double> OmpResult = OMPGaussFilter(Matrix, n, m);
 
     ASSERT_EQ(SeqResult, OmpResult);
 }
@@ -33,8 +33,8 @@ TEST(LGaussVerticalOMP, RandomTest10x10) {
     int n = 10;
     std::vector<double> Matrix = MakeRandomMatrix(m, n);
 
-    std::vector <double> SeqResult = SeqGaussFilter(Matrix, n, m);
-    std::vector <double> OmpResult = OMPGaussFilter(Matrix, n, m);
+    std::vector<double> SeqResult = SeqGaussFilter(Matrix, n, m);
+    std::vector<double> OmpResult = OMPGaussFilter(Matrix, n, m);
 
     ASSERT_EQ(SeqResult, OmpResult);
 }
@@ -44,8 +44,8 @@ TEST(LGaussVerticalOMP, RandomTest50x50) {
     int n = 50;
     std::vector<double> Matrix = MakeRandomMatrix(m, n);
 
-    std::vector <double> SeqResult = SeqGaussFilter(Matrix, n, m);
-    std::vector <double> OmpResult = OMPGaussFilter(Matrix, n, m);
+    std::vector<double> SeqResult = SeqGaussFilter(Matrix, n, m);
+    std::vector<double> OmpResult = OMPGaussFilter(Matrix, n, m);
 
     ASSERT_EQ(SeqResult, OmpResult);
 }
