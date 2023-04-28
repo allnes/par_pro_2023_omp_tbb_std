@@ -82,7 +82,6 @@ std::vector<float> getParallelOperations(const int width, const int height,
                                          const std::vector<float>& img,
                                          int num_th) {
   std::vector<float> res(width * height);
-  tbb::task_scheduler_init init(num_th);
   int grainsize = 1;
   // if (num_th < height) {
   //   gr = height / num_th;
