@@ -5,23 +5,22 @@
 
 #include <vector>
 
-
 template <class T>
 struct image {
     std::vector<T> _matrix;
     size_t _columns;
     size_t _rows;
-    image(std::vector<T> matrix, size_t columns, size_t rows) :_matrix(matrix),
-        _columns(columns),
-        _rows(rows) {
+    image(std::vector<T> matrix, size_t columns, size_t rows):_matrix(matrix),
+                                                              _columns(columns),
+                                                              _rows(rows) {
         if (matrix.size() != rows * columns)
-            throw - 1;
+            throw -1;
     }
 
-    image(size_t columns, size_t rows) :_columns(columns),
-        _rows(rows) {
+    image(size_t columns, size_t rows):_columns(columns),
+                                       _rows(rows) {
         if (rows <= 0 || columns <= 0) {
-            throw - 1;
+            throw -1;
         }
         _matrix.resize(columns * rows);
         _matrix.assign(_matrix.size(), 0);
@@ -29,8 +28,8 @@ struct image {
 
     bool operator==(const image& img) const {
         return this->_matrix == img._matrix &&
-            this->_rows == img._rows &&
-            this->_columns == img._columns;
+               this->_rows == img._rows &&
+               this->_columns == img._columns;
     }
 };
 

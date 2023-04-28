@@ -9,10 +9,10 @@
 #include "../../../modules/task_2/goncharova_a_sobel_omp/goncharova_a_sobel_omp.h"
 
 TEST(imageStructure, canCompareImages) {
-    image<int> img1({ 1, 2, 3, 4 }, 2, 2);
-    image<int> img2({ 1, 2, 3, 4 }, 2, 2);
-    image<int> img3({ 1, 0, 3, 4 }, 2, 2);
-    image<int> img4({ 1, 2, 3, 4 }, 1, 4);
+    image<int> img1({1, 2, 3, 4}, 2, 2);
+    image<int> img2({1, 2, 3, 4}, 2, 2);
+    image<int> img3({1, 0, 3, 4}, 2, 2);
+    image<int> img4({1, 2, 3, 4}, 1, 4);
 
     ASSERT_TRUE(img1 == img1);
     ASSERT_TRUE(img1 == img2);
@@ -30,7 +30,7 @@ TEST(imageStructure, randMatrixWithNullSize) {
 }
 
 TEST(imageStructure, createMatrixWithIncorrectSize) {
-    ASSERT_ANY_THROW(image<int>({ 1, 2, 3, 4 }, 1, 2));
+    ASSERT_ANY_THROW(image<int> ({1, 2, 3, 4}, 1, 2));
 }
 
 TEST(seqSobelFilter, emptyMatrix) {
@@ -61,17 +61,17 @@ TEST(parallelSobelFilter, sobelChangeMatrix) {
 TEST(parallelSobelFilter, seqAndParIsEqual) {
     auto img = randImage(100, 100);
 
-    //    auto startPar = omp_get_wtime();
+//    auto startPar = omp_get_wtime();
     auto parRes = sobelOmp(img);
-    //    auto stopPar = omp_get_wtime();
+//    auto stopPar = omp_get_wtime();
 
-    //    auto startSeq = omp_get_wtime();
+//    auto startSeq = omp_get_wtime();
     auto seqRes = sobelSequence(img);
-    //    auto stopSeq = omp_get_wtime();
+//    auto stopSeq = omp_get_wtime();
 
-    //    std::cout << "Sequnce: " << stopSeq - startSeq << "\n"
-    //              << "Parallel: " << stopPar - startPar << "\n"
-    //              << "Delta: " << stopSeq - startSeq - stopPar + startPar << "\n";
+//    std::cout << "Sequnce: " << stopSeq - startSeq << "\n"
+//              << "Parallel: " << stopPar - startPar << "\n"
+//              << "Delta: " << stopSeq - startSeq - stopPar + startPar << "\n";
 
     ASSERT_EQ(parRes, seqRes);
 }
@@ -110,7 +110,7 @@ TEST(parallelSobelFilter, returnExpectedResult) {
     ASSERT_EQ(parResult, expectedImage);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
