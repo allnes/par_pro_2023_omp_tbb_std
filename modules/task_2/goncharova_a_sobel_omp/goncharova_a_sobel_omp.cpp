@@ -1,66 +1,102 @@
 // Copyright 2023 Goncharova Anna
 
+#include <omp.h>
+#include <algorithm>
 #include <random>
 #include <ctime>
 #include <vector>
-#include "../../../modules/task_2/goncharova_a_sobel_omp/goncharova_a_sobel_omp.h"
+#include <iostream>
+#include "../../../modules/task_2/goncharova_a_sobele_omp/goncharova_a_sobele_omp.h"
 
-const image<char> KERNEL_X({1, 0, -1, 2, 0, -2, 1, 0, -1}, 3, 3);
-const image<char> KERNEL_Y({1, 2, 1, 0, 0, 0, -1, -2, -1}, 3, 3);
-
-image<uint8_t> randImage(size_t columns, size_t rows) {
-    if (rows == 0 || columns == 0) {
-        throw -1;
-    }
-    std::vector<uint8_t> matrix(columns * rows);
-    std::mt19937 gen;
-    gen.seed(static_cast<unsigned int>(time(0)));
-    for (size_t i = 0; i < rows; i++)
-        for (size_t j = 0; j < columns; j++)
-            matrix[i * rows + j] = static_cast<uint8_t>(gen() % 256);
-    return image<uint8_t>(matrix, columns, rows);
+image::image(int _width, int _height) {
+    if ((_width <= 0) || (_height <= 0))
+        throw "Uncorrect size";
+    width = _width;
+    height = _height;
+    matrix.resize(_width * _height);
+    for (int i = 0; i < _width * _height; i++)
+        matrix[i] = 0;
 }
 
-image<uint8_t> sobelSequence(image<uint8_t> inImage) {
-    if (inImage._rows == 0 || inImage._columns == 0 || inImage._matrix.empty()) {
-        throw -1;
-    }
-    image<uint8_t> result(inImage._columns, inImage._rows);
-    for (size_t i = 1; i < inImage._rows - 1; ++i)
-        for (size_t j = 1; j < inImage._columns - 1; ++j) {
-            int index = i * inImage._columns + j;
-            int resX = 0, resY = 0;
-            int indexKernel = 0;
-            for (int ki = -1; ki <= 1; ki++)
-                for (int kj = -1; kj <= 1; kj++) {
-                    resX += KERNEL_X._matrix[indexKernel] * inImage._matrix[(i + ki) * inImage._columns + j + kj];
-                    resY += KERNEL_Y._matrix[indexKernel] * inImage._matrix[(i + ki) * inImage._columns + j + kj];
-                    indexKernel++;
+image getRandomMatrix(int _width, int _height) {
+    if ((_width <= 0) || (_height <= 0))
+        throw "Uncorrect size";
+    image Ex1(_width, _height);
+    std::mt19937 gen;
+    gen.seed(static_cast<unsigned int>(time(0)));
+    for (int i = 0; i < _width; i++)
+        for (int j = 0; i < _height; i++)
+            Ex1.matrix[i * _width + j] = gen() % 256;
+    return Ex1;
+}
+
+image SequenceMainFunction(image Start) {
+    if ((Start.height <= 0) || (Start.matrix.empty()) || (Start.width <= 0))
+        throw "Uncorrect image";
+    std::vector<int> Gx, Gy;
+    Gx.resize(9);
+    Gy.resize(9);
+    Gx = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
+    Gy = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
+    image result(Start.width, Start.height);
+
+
+    int i = 0;
+    while (i < Start.width) {
+        int j = 0;
+        while (j < Start.height) {
+            int ind = i * Start.height + j;
+            int X = 0, Y = 0, Ind_G = 0;
+            int a = 0, b = 0;
+            while (a < 3) {
+                while (b < 3) {
+                    X = Gx[Ind_G] * Start.matrix[(i + a) * Start.height + j + b] + X;
+                    Y = Gy[Ind_G] * Start.matrix[(i + a) * Start.height + j + b] + Y;
+                    Ind_G++;
+                    b++;
                 }
-            result._matrix[index] = sqrt(resX * resX + resY * resY) > 255 ? 255 : sqrt(resX * resX + resY * resY);
+                a++;
+            }
+            if (sqrt(X * X + Y * Y) > 255)
+                result.matrix[ind] = 255;
+            else
+                result.matrix[ind] = sqrt(X * X + Y * Y);
+            j++;
         }
+        i++;
+    }
     return result;
 }
 
-image<uint8_t> sobelOmp(image<uint8_t> inImage) {
-    if (inImage._rows == 0 || inImage._columns == 0 || inImage._matrix.empty()) {
-        throw -1;
-    }
-    image<uint8_t> result(inImage._columns, inImage._rows);
-    #pragma omp parallel for
-    for (int i = 1; i < static_cast<int>(inImage._rows) - 1; ++i)
-        for (int j = 1; j < static_cast<int>(inImage._columns) - 1; ++j) {
-            int index = i * inImage._columns + j;
-            int resX = 0, resY = 0;
-            int indexKernel = 0;
-            for (int ki = -1; ki <= 1; ki++)
-                for (int kj = -1; kj <= 1; kj++) {
-                    resX += KERNEL_X._matrix[indexKernel] * inImage._matrix[(i + ki) * inImage._columns + j + kj];
-                    resY += KERNEL_Y._matrix[indexKernel] * inImage._matrix[(i + ki) * inImage._columns + j + kj];
-                    indexKernel++;
+image OmpMainFunction(image Start) {
+    if ((Start.height <= 0) || (Start.matrix.empty()) || (Start.width <= 0))
+        throw "Uncorrect image";
+    std::vector<int> Gx, Gy;
+    Gx.resize(9);
+    Gy.resize(9);
+    Gx = { -1, 0, 1, -2, 0, 2, -1, 0, 1 };
+    Gy = { -1, -2, -1, 0, 0, 0, 1, 2, 1 };
+    image result(Start.width, Start.height);
+
+#pragma omp parallel for
+    for (int i = 0; i < Start.width; i++) {
+        for (int j = 0; j < Start.height; j++) {
+            int ind = i * Start.height + j;
+            int X = 0, Y = 0, Ind_G = 0;
+            for (int a = 0; a < 3; a++) {
+                for (int b = 0; b < 3; b++) {
+                    X = Gx[Ind_G] * Start.matrix[(i + a) * Start.height + j + b] + X;
+                    Y = Gy[Ind_G] * Start.matrix[(i + a) * Start.height + j + b] + Y;
+                    Ind_G++;
                 }
-            result._matrix[index] = sqrt(resX * resX + resY * resY) > 255 ? 255 : sqrt(resX * resX + resY * resY);
+            }
+
+            if (sqrt(X * X + Y * Y) > 255)
+                result.matrix[ind] = 255;
+            else
+                result.matrix[ind] = sqrt(X * X + Y * Y);
         }
+    }
     return result;
 }
 
