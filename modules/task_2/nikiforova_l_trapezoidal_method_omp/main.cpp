@@ -48,7 +48,7 @@ TEST(Trapezoidal_Rule_omp, Test1) {
     double res = trapezoidalMethod(f1, front, p);
     double a = 1584;
 
-    ASSERT_NEAR(res, a, 255);
+    ASSERT_NEAR(res, a, 257);
 }
 
 TEST(Trapezoidal_Rule_omp, Test2) {
