@@ -87,47 +87,37 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
     return C;
 }
 
-SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
-    SparceMatrix C;
-    tbb::concurrent_vector<double> temp(A.col_ptr.size() - 1);
-    tbb::concurrent_vector<double> data;
-    tbb::concurrent_vector<int> row_id;
-    std::vector<int> col_ptr;
-    tbb::mutex col_ptr_mutex;
+SparceMatrix multiply(SparceMatrix& A, SparceMatrix& B) {
+    int n1 = A.n, n2 = B.n;
+    SparceMatrix result;
+    result.n = n1;
+    result.col_ptr.push_back(0);
 
-    col_ptr.push_back(0);
-
-    tbb::parallel_for(
-        tbb::blocked_range<int>(0, B.col_ptr.size() - 1),
-        [&](const tbb::blocked_range<int>& range) {
-            for (int j = range.begin(); j < range.end(); j++) {
-                std::fill(temp.begin(), temp.end(), 0);
-                for (int k = B.col_ptr[j]; k < B.col_ptr[j + 1]; k++) {
-                    int row = B.row_id[k];
-                    double val = B.data[k];
-                    for (int i = A.col_ptr[row]; i < A.col_ptr[row + 1]; i++) {
-                        int col = A.row_id[i];
-                        temp[col] += A.data[i] * val;
-                    }
-                }
-                int data_size = 0;
-                for (int i = 0; i < temp.size(); i++) {
-                    if (temp[i] != 0) {
-                        data.push_back(temp[i]);
-                        row_id.push_back(i);
-                        data_size++;
-                    }
-                }
-                {
-                    tbb::mutex::scoped_lock lock(col_ptr_mutex);
-                    col_ptr.push_back(col_ptr.back() + data_size);
+    tbb::parallel_for(0, n1, [&](int i) {
+        for (int j = 0; j < n2; j++) {
+            double res = 0.0;
+            int a_start = A.col_ptr[i], a_end = A.col_ptr[i + 1];
+            int b_start = B.col_ptr[j], b_end = B.col_ptr[j + 1];
+            int a_idx = a_start, b_idx = b_start;
+            while (a_idx < a_end && b_idx < b_end) {
+                int a_col = A.row_id[a_idx], b_row = B.row_id[b_idx];
+                if (a_col < b_row) {
+                    a_idx++;
+                } else if (a_col > b_row) {
+                    b_idx++;
+                } else {
+                    res += A.data[a_idx] * B.data[b_idx];
+                    a_idx++;
+                    b_idx++;
                 }
             }
-        });
+            if (res != 0.0) {
+                result.data.push_back(res);
+                result.row_id.push_back(j);
+            }
+        }
+        result.col_ptr.push_back(result.data.size());
+    });
 
-    C.data = std::vector<double>(data.begin(), data.end());
-    C.row_id = std::vector<int>(row_id.begin(), row_id.end());
-    C.col_ptr = col_ptr;
-    C.n = A.col_ptr.size() - 1;
-    return C;
+    return result;
 }
