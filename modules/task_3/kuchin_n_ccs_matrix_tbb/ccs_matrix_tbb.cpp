@@ -87,7 +87,7 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
     return C;
 }
 
-SparceMatrix multiply(SparceMatrix& A, SparceMatrix& B) {
+SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     int n1 = A.n, n2 = B.n;
     SparceMatrix result;
     result.n = n1;
