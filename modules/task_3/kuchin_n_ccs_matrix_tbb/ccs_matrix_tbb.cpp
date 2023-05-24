@@ -85,7 +85,7 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
     return C;
 }
 
-SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
+SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     SparceMatrix C;
     std::vector<double> temp(A.col_ptr.size() - 1);
 
