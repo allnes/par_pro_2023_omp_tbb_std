@@ -93,6 +93,9 @@ SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     result.n = n1;
     result.col_ptr.push_back(0);
 
+    tbb::concurrent_vector<double> res_data;
+    tbb::concurrent_vector<int> res_row_id;
+
     tbb::parallel_for(0, n1, [&](int i) {
         for (int j = 0; j < n2; j++) {
             double res = 0.0;
@@ -112,12 +115,15 @@ SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
                 }
             }
             if (res != 0.0) {
-                result.data.push_back(res);
-                result.row_id.push_back(j);
+                res_data.push_back(res);
+                res_row_id.push_back(j);
             }
         }
-        result.col_ptr.push_back(result.data.size());
+        result.col_ptr.push_back(res_data.size());
     });
+
+    result.data = std::vector<double>(res_data.begin(), res_data.end());
+    result.row_id = std::vector<int>(res_row_id.begin(), res_row_id.end());
 
     return result;
 }
