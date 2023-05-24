@@ -24,6 +24,9 @@ TEST(Tbb, test1) {
     C.col_ptr = {0, 1, 1, 2};
     SparceMatrix res = multiply(A, B);
     SparceMatrix res1 = tbbmultiply(A, B);
+    for(int int i = 0; i < C.data.size(); i++){
+        ASSERT_EQ(C.data[i], res1.data[i])
+    }
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 0.1);
         ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < 2.0);
@@ -54,6 +57,9 @@ TEST(Tbb, test2) {
     C.col_ptr = {0, 1, 2, 3, 5};
     SparceMatrix res = multiply(A, B);
     SparceMatrix res1 = tbbmultiply(A, B);
+    for(int int i = 0; i < C.data.size(); i++){
+        ASSERT_EQ(C.data[i], res1.data[i])
+    }
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 0.1);
         ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < 2.0);
@@ -82,6 +88,9 @@ TEST(Tbb, test3) {
     C.col_ptr = {0, 1, 2, 4, 6, 7, 8};
     SparceMatrix res = multiply(A, B);
     SparceMatrix res1 = tbbmultiply(A, B);
+    for(int int i = 0; i < C.data.size(); i++){
+        ASSERT_EQ(C.data[i], res1.data[i])
+    }
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 0.1);
         ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < 2.0);
@@ -110,6 +119,9 @@ TEST(Tbb, test4) {
     C.col_ptr = {0, 2, 3, 6, 7, 9};
     SparceMatrix res = multiply(A, B);
     SparceMatrix res1 = tbbmultiply(A, B);
+    for(int int i = 0; i < C.data.size(); i++){
+        ASSERT_EQ(C.data[i], res1.data[i])
+    }
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 0.1);
         ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < 2.0);
@@ -137,6 +149,9 @@ TEST(Tbb, test5) {
     C.col_ptr = {0, 2, 3, 5, 6};
     SparceMatrix res = multiply(A, B);
     SparceMatrix res1 = tbbmultiply(A, B);
+    for(int int i = 0; i < C.data.size(); i++){
+        ASSERT_EQ(C.data[i], res1.data[i])
+    }
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 0.1);
         ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < 2.0);
