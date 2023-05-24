@@ -85,9 +85,18 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
     return C;
 }
 
+#include <tbb/concurrent_vector.h>
+#include <tbb/mutex.h>
+
 SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     SparceMatrix C;
-    std::vector<double> temp(A.col_ptr.size() - 1);
+    tbb::concurrent_vector<double> temp(A.col_ptr.size() - 1);
+    tbb::concurrent_vector<double> data;
+    tbb::concurrent_vector<int> row_id;
+    std::vector<int> col_ptr;
+    tbb::mutex col_ptr_mutex;
+
+    col_ptr.push_back(0);
 
     tbb::parallel_for(
         tbb::blocked_range<int>(0, B.col_ptr.size() - 1),
@@ -102,17 +111,24 @@ SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
                         temp[col] += A.data[i] * val;
                     }
                 }
-                C.col_ptr.push_back(C.data.size());
+                int data_size = 0;
                 for (int i = 0; i < temp.size(); i++) {
                     if (temp[i] != 0) {
-                        C.data.push_back(temp[i]);
-                        C.row_id.push_back(i);
+                        data.push_back(temp[i]);
+                        row_id.push_back(i);
+                        data_size++;
                     }
+                }
+                {
+                    tbb::mutex::scoped_lock lock(col_ptr_mutex);
+                    col_ptr.push_back(col_ptr.back() + data_size);
                 }
             }
         });
 
-    C.col_ptr.push_back(C.data.size());
+    C.data = std::vector<double>(data.begin(), data.end());
+    C.row_id = std::vector<int>(row_id.begin(), row_id.end());
+    C.col_ptr = col_ptr;
     C.n = A.col_ptr.size() - 1;
     return C;
 }
