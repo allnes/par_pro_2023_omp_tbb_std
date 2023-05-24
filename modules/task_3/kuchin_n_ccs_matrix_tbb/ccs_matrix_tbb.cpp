@@ -88,42 +88,51 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
 }
 
 SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
-    int n1 = A.n, n2 = B.n;
-    SparceMatrix result;
-    result.n = n1;
-    result.col_ptr.push_back(0);
+    if (A.n != B.n) {
+        throw std::invalid_argument("Matrices have different sizes.");
+    }
+    SparceMatrix BT = transport(B);
+    SparceMatrix C;
+    C.n = A.n;
+    std::vector<double> emptyd;
+    std::vector<int> emptyi;
+    for (int i = 0; i < A.n; i++) {
+        C.row_id.push_back(emptyi);
+        C.data.push_back(emptyd);
+    }
+    C.col_ptr.push_back(0);
 
-    tbb::concurrent_vector<double> res_data;
-    tbb::concurrent_vector<int> res_row_id;
-
-    tbb::parallel_for(0, n1, [&](int i) {
-        for (int j = 0; j < n2; j++) {
-            double res = 0.0;
-            int a_start = A.col_ptr[i], a_end = A.col_ptr[i + 1];
-            int b_start = B.col_ptr[j], b_end = B.col_ptr[j + 1];
-            int a_idx = a_start, b_idx = b_start;
-            while (a_idx < a_end && b_idx < b_end) {
-                int a_col = A.row_id[a_idx], b_row = B.row_id[b_idx];
-                if (a_col < b_row) {
-                    a_idx++;
-                } else if (a_col > b_row) {
-                    b_idx++;
-                } else {
-                    res += A.data[a_idx] * B.data[b_idx];
-                    a_idx++;
-                    b_idx++;
+    tbb::parallel_for(
+        tbb::blocked_range<int>(0, A.n), [&](const tbb::blocked_range<int>& r) {
+            for (int i = r.begin(); i < r.end(); i++) {
+                for (int j = 0; j < B.n; j++) {
+                    double dot_product = 0;
+                    int k1 = A.col_ptr[i];
+                    int k2 = BT.col_ptr[j];
+                    while (k1 < A.col_ptr[i + 1] && k2 < BT.col_ptr[j + 1]) {
+                        if (A.row_id[k1] < BT.row_id[k2]) {
+                            k1++;
+                        } else if (A.row_id[k1] > BT.row_id[k2]) {
+                            k2++;
+                        } else {
+                            dot_product += A.data[k1] * BT.data[k2];
+                            k1++;
+                            k2++;
+                        }
+                    }
+                    if (dot_product != 0) {
+                        tbb::mutex::scoped_lock lock(C.data[i].mutex);
+                        C.data[i].push_back(dot_product);
+                        C.row_id[i].push_back(j);
+                        C.col_ptr[j + 1]++;
+                    }
                 }
             }
-            if (res != 0.0) {
-                res_data.push_back(res);
-                res_row_id.push_back(j);
-            }
-        }
-        result.col_ptr.push_back(res_data.size());
-    });
+        });
 
-    result.data = std::vector<double>(res_data.begin(), res_data.end());
-    result.row_id = std::vector<int>(res_row_id.begin(), res_row_id.end());
+    for (int i = 0; i < C.n; i++) {
+        C.col_ptr.push_back(C.col_ptr[i] + C.data[i].size());
+    }
 
-    return result;
+    return C;
 }
