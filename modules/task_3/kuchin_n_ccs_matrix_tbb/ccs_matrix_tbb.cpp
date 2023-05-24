@@ -85,29 +85,33 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
     return C;
 }
 
-SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
+SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
     SparceMatrix C;
     std::vector<double> temp(A.col_ptr.size() - 1);
-    tbb::concurrent_vector<double> temp_conc(A.col_ptr.size() - 1);
-    tbb::parallel_for(0, static_cast<int>(B.col_ptr.size() - 1), [&](int j) {
-        temp_conc.clear();
-        temp_conc.resize(A.col_ptr.size() - 1);
-        for (int k = B.col_ptr[j]; k < B.col_ptr[j + 1]; k++) {
-            int row = B.row_id[k];
-            double val = B.data[k];
-            tbb::parallel_for(A.col_ptr[row], A.col_ptr[row + 1], [&](int i) {
-                int col = A.row_id[i];
-                temp_conc.at(col) += A.data[i] * val;
-            });
-        }
-        C.col_ptr.push_back(C.data.size());
-        for (int i = 0; i < temp_conc.size(); i++) {
-            if (temp_conc[i] != 0) {
-                C.data.push_back(temp_conc[i]);
-                C.row_id.push_back(i);
+
+    tbb::parallel_for(
+        tbb::blocked_range<int>(0, B.col_ptr.size() - 1),
+        [&](const tbb::blocked_range<int>& range) {
+            for (int j = range.begin(); j < range.end(); j++) {
+                std::fill(temp.begin(), temp.end(), 0);
+                for (int k = B.col_ptr[j]; k < B.col_ptr[j + 1]; k++) {
+                    int row = B.row_id[k];
+                    double val = B.data[k];
+                    for (int i = A.col_ptr[row]; i < A.col_ptr[row + 1]; i++) {
+                        int col = A.row_id[i];
+                        temp[col] += A.data[i] * val;
+                    }
+                }
+                C.col_ptr.push_back(C.data.size());
+                for (int i = 0; i < temp.size(); i++) {
+                    if (temp[i] != 0) {
+                        C.data.push_back(temp[i]);
+                        C.row_id.push_back(i);
+                    }
+                }
             }
-        }
-    });
+        });
+
     C.col_ptr.push_back(C.data.size());
     C.n = A.col_ptr.size() - 1;
     return C;
