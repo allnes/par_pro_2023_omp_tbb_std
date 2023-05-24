@@ -2,6 +2,8 @@
 
 #include "../../../modules/task_3/kuchin_n_ccs_matrix_tbb/ccs_matrix_tbb.h"
 
+#include <tbb/concurrent_vector.h>
+#include <tbb/mutex.h>
 #include <tbb/tbb.h>
 
 #include <cmath>
@@ -84,9 +86,6 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
     C.n = A.col_ptr.size() - 1;
     return C;
 }
-
-#include <tbb/concurrent_vector.h>
-#include <tbb/mutex.h>
 
 SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     SparceMatrix C;
