@@ -62,7 +62,7 @@ TEST(Tbb, test2) {
     EXPECT_EQ(C.col_ptr, res.col_ptr);
     EXPECT_EQ(C.row_id, res1.row_id);
     EXPECT_EQ(C.col_ptr, res1.col_ptr);*/
-    EXPECT_EQ(1,1);
+    EXPECT_EQ(1, 1);
 }
 
 TEST(Tbb, test3) {
