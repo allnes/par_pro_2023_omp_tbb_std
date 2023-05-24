@@ -2,8 +2,6 @@
 
 #include "../../../modules/task_3/kuchin_n_ccs_matrix_tbb/ccs_matrix_tbb.h"
 
-#include <tbb/concurrent_vector.h>
-// #include <tbb/mutex.h>
 #include <tbb/tbb.h>
 
 #include <cmath>
@@ -88,51 +86,29 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
 }
 
 SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
-    if (A.n != B.n) {
-        throw std::invalid_argument("Matrices have different sizes.");
-    }
-    SparceMatrix BT = transport(B);
     SparceMatrix C;
-    C.n = A.n;
-    std::vector<double> emptyd;
-    std::vector<int> emptyi;
-    for (int i = 0; i < A.n; i++) {
-        C.row_id.push_back(emptyi);
-        C.data.push_back(emptyd);
-    }
-    C.col_ptr.push_back(0);
-
-    tbb::parallel_for(
-        tbb::blocked_range<int>(0, A.n), [&](const tbb::blocked_range<int>& r) {
-            for (int i = r.begin(); i < r.end(); i++) {
-                for (int j = 0; j < B.n; j++) {
-                    double dot_product = 0;
-                    int k1 = A.col_ptr[i];
-                    int k2 = BT.col_ptr[j];
-                    while (k1 < A.col_ptr[i + 1] && k2 < BT.col_ptr[j + 1]) {
-                        if (A.row_id[k1] < BT.row_id[k2]) {
-                            k1++;
-                        } else if (A.row_id[k1] > BT.row_id[k2]) {
-                            k2++;
-                        } else {
-                            dot_product += A.data[k1] * BT.data[k2];
-                            k1++;
-                            k2++;
-                        }
-                    }
-                    if (dot_product != 0) {
-                        tbb::mutex::scoped_lock lock(C.data[i].mutex);
-                        C.data[i].push_back(dot_product);
-                        C.row_id[i].push_back(j);
-                        C.col_ptr[j + 1]++;
-                    }
-                }
+    std::vector<double> temp(A.col_ptr.size() - 1);
+    tbb::concurrent_vector<double> temp_conc(A.col_ptr.size() - 1);
+    tbb::parallel_for(0, static_cast<int>(B.col_ptr.size() - 1), [&](int j) {
+        temp_conc.clear();
+        temp_conc.resize(A.col_ptr.size() - 1);
+        for (int k = B.col_ptr[j]; k < B.col_ptr[j + 1]; k++) {
+            int row = B.row_id[k];
+            double val = B.data[k];
+            tbb::parallel_for(A.col_ptr[row], A.col_ptr[row + 1], [&](int i) {
+                int col = A.row_id[i];
+                temp_conc.at(col) += A.data[i] * val;
+            });
+        }
+        C.col_ptr.push_back(C.data.size());
+        for (int i = 0; i < temp_conc.size(); i++) {
+            if (temp_conc[i] != 0) {
+                C.data.push_back(temp_conc[i]);
+                C.row_id.push_back(i);
             }
-        });
-
-    for (int i = 0; i < C.n; i++) {
-        C.col_ptr.push_back(C.col_ptr[i] + C.data[i].size());
-    }
-
+        }
+    });
+    C.col_ptr.push_back(C.data.size());
+    C.n = A.col_ptr.size() - 1;
     return C;
 }
