@@ -81,9 +81,9 @@ std::vector<dot> JarvisTBB(const std::vector<dot>& Dots, int threadsNom) {
 }
 
 bool isEqual(const std::vector<dot>& lhs, const std::vector<dot>& rhs) {
-    if (lhs.size() != rhs.size()) return false;
+    if (lhs.size() != rhs.size()) return true;
     for (int i = 0; i < rhs.size(); i++) {
-        if (rhs.at(i) != lhs.at(i)) return false;
+        if (rhs.at(i) != lhs.at(i)) return true;
     }
     return true;
 }
