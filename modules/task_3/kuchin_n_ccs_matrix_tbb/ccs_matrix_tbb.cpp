@@ -3,6 +3,8 @@
 #include "../../../modules/task_3/kuchin_n_ccs_matrix_tbb/ccs_matrix_tbb.h"
 
 #include <tbb/tbb.h>
+#include <tbb/concurrent_vector.h>
+#include <tbb/blocked_range.h> 
 
 #include <cmath>
 #include <vector>
@@ -87,28 +89,40 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
 
 SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     SparceMatrix C;
-    std::vector<double> temp(A.col_ptr.size() - 1);
-    tbb::concurrent_vector<double> temp_conc(A.col_ptr.size() - 1);
-    tbb::parallel_for(0, static_cast<int>(B.col_ptr.size() - 1), [&](int j) {
-        temp_conc.clear();
-        temp_conc.resize(A.col_ptr.size() - 1);
-        for (int k = B.col_ptr[j]; k < B.col_ptr[j + 1]; k++) {
-            int row = B.row_id[k];
-            double val = B.data[k];
-            tbb::parallel_for(A.col_ptr[row], A.col_ptr[row + 1], [&](int i) {
-                int col = A.row_id[i];
-                temp_conc.at(col) += A.data[i] * val;
-            });
-        }
-        C.col_ptr.push_back(C.data.size());
-        for (int i = 0; i < temp_conc.size(); i++) {
-            if (temp_conc[i] != 0) {
-                C.data.push_back(temp_conc[i]);
-                C.row_id.push_back(i);
+    tbb::concurrent_vector<double> temp(A.col_ptr.size() - 1);
+    tbb::concurrent_vector<double> data;
+    tbb::concurrent_vector<int> row_id;
+    tbb::concurrent_vector<int> col_ptr;
+
+    col_ptr.push_back(0);
+
+    tbb::parallel_for(tbb::blocked_range<int>(0, B.col_ptr.size() - 1), [&](const tbb::blocked_range<int>& range) {
+        for (int j = range.begin(); j < range.end(); j++) {
+            std::fill(temp.begin(), temp.end(), 0);
+            for (int k = B.col_ptr[j]; k < B.col_ptr[j + 1]; k++) {
+                int row = B.row_id[k];
+                double val = B.data[k];
+                for (int i = A.col_ptr[row]; i < A.col_ptr[row + 1]; i++) {
+                    int col = A.row_id[i];
+                    temp[col] += A.data[i] * val;
+                }
             }
+            int data_size = 0;
+            for (int i = 0; i < temp.size(); i++) {
+                if (temp[i] != 0) {
+                    data.push_back(temp[i]);
+                    row_id.push_back(i);
+                    data_size++;
+                }
+            }
+            col_ptr.push_back(col_ptr.back() + data_size);
         }
     });
-    C.col_ptr.push_back(C.data.size());
+
+    C.data = std::vector<double>(data.begin(), data.end());
+    C.row_id = std::vector<int>(row_id.begin(), row_id.end());
+    C.col_ptr = std::vector<int>(col_ptr.begin(), col_ptr.end());
     C.n = A.col_ptr.size() - 1;
     return C;
 }
+
