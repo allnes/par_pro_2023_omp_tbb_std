@@ -1,4 +1,4 @@
-// Copyright 2022 Kuchin Nikita
+// Copyright 2023 Kuchin Nikita
 
 #include <gtest/gtest.h>
 
