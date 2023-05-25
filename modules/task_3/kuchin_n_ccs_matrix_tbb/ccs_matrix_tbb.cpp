@@ -94,7 +94,7 @@ SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     tbb::concurrent_vector<double> data;
     tbb::concurrent_vector<int> row_id;
     std::vector<int> col_ptr;
-    tbb::mutex col_ptr_mutex;
+    tbb::queuing_mutex col_ptr_mutex;
 
     col_ptr.push_back(0);
 
