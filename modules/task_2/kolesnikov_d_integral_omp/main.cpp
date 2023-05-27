@@ -31,7 +31,7 @@ double f5(std::vector<double> par) {
   double x = par[0];
   double y = par[1];
   double z = par[2];
-  return (sqrt(x*x) + 2*(y+z));
+  return (x + 2*(y+z));
 }
 
 TEST(Omp, test_1) {
