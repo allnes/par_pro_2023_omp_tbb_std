@@ -5,6 +5,7 @@
 #include <omp.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cassert>
 #include <iostream>
 #include <limits>
@@ -32,9 +33,9 @@ struct Point {
   }
   bool operator!=(const Point& other) const { return !(*this == other); }
 };
-point_orientation orientation(Point p, Point q, Point r);
-std::vector<Point> get_convex_hull(const std::vector<Point>& points);
-std::vector<Point> get_convex_hull_omp(const std::vector<Point>& points);
-float dist(Point, Point);
+point_orientation orientation(Point, Point, Point);
+std::vector<Point> get_convex_hull(const std::vector<Point>&);
+std::vector<Point> get_convex_hull_omp(const std::vector<Point>&);
+double dist2(Point, Point);
 
 #endif  // MODULES_TASK_2_KROLEVETS_N_JARVIS_ALGORITHM_JARVIS_ALGORITHM_H_"

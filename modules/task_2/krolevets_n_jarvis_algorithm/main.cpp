@@ -55,6 +55,7 @@ TEST(convex_hull_test, hull_of_ten) {
   auto output2 = get_convex_hull_omp(input);
   if (output.size() != output2.size()) {
     print_vecs(output, output2);
+    print_vecs(input, input);
   }
   bool dumb_lint1 = output.size() == output2.size();
   bool dumb_lint2 = output == output2;

@@ -8,6 +8,12 @@ point_orientation orientation(Point p, Point q, Point r) {
                    : point_orientation::counterclockwsise;
 }
 
+double dist2(Point a, Point b) {
+  int dx = b.x - a.x;
+  int dy = b.y - a.y;
+  return dx * dx + dy * dy;
+}
+
 std::vector<Point> get_convex_hull_omp(const std::vector<Point>& points) {
   int n = points.size();
   if (n < 3)
@@ -23,18 +29,19 @@ std::vector<Point> get_convex_hull_omp(const std::vector<Point>& points) {
       start = i;
     }
   }
-  int to_push = start;
+  int current = start;
   int next;
   std::vector<int> to_push_by_each_thread;
-  while (true) {
-    next = (to_push + 1) % n;
-#pragma omp parallel shared(next, to_push)
-    {
+#pragma omp parallel shared(start, next, current, n)
+  {
+    while (true) {
+#pragma omp single
+      { next = (current + 1) % n; }
       int private_next = next;
       bool was_used = false;
 #pragma omp for
       for (int i = 0; i < n; ++i) {
-        if (orientation(points[to_push], points[private_next], points[i]) ==
+        if (orientation(points[current], points[private_next], points[i]) ==
             point_orientation::counterclockwsise) {
           private_next = i;
           was_used = true;
@@ -50,24 +57,31 @@ std::vector<Point> get_convex_hull_omp(const std::vector<Point>& points) {
 #pragma omp single
       {
         for (int i = 0; i < to_push_by_each_thread.size(); ++i) {
-          if (orientation(points[to_push], points[next],
+          if (orientation(points[current], points[next],
                           points[to_push_by_each_thread[i]]) ==
-              point_orientation::counterclockwsise) {
+                  point_orientation::counterclockwsise ||
+              orientation(points[current], points[next],
+                          points[to_push_by_each_thread[i]]) ==
+                      point_orientation::colliniar &&
+                  dist2(points[current], points[next]) <
+                      dist2(points[current],
+                            points[to_push_by_each_thread[i]])) {
             next = to_push_by_each_thread[i];
           }
         }
         to_push_by_each_thread.clear();
         for (int i = 0; i < n; i++) {
-          if (orientation(points[to_push], points[next], points[i]) ==
+          if (orientation(points[current], points[next], points[i]) ==
               point_orientation::colliniar) {
             hull.insert(points[i]);
           }
         }
-        to_push = next;
+        current = next;
       }
-    }
-    if (next == start) {
-      break;
+      if (next == start) {
+        break;
+      }
+#pragma omp barrier
     }
   }
   return std::vector<Point>(hull.begin(), hull.end());
@@ -95,7 +109,11 @@ std::vector<Point> get_convex_hull(const std::vector<Point>& points) {
     next = (to_push + 1) % n;
     for (int i = 0; i < n; i++) {
       if (orientation(points[to_push], points[next], points[i]) ==
-          point_orientation::counterclockwsise) {
+              point_orientation::counterclockwsise ||
+          orientation(points[to_push], points[next], points[i]) ==
+                  point_orientation::colliniar &&
+              dist2(points[to_push], points[next]) <
+                  dist2(points[to_push], points[i])) {
         next = i;
       }
     }
@@ -110,5 +128,6 @@ std::vector<Point> get_convex_hull(const std::vector<Point>& points) {
       break;
     }
   }
+
   return std::vector<Point>(hull.begin(), hull.end());
 }
