@@ -90,7 +90,6 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
 
 SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     SparceMatrix C;
-    tbb::concurrent_vector<double> temp(A.col_ptr.size() - 1);
     tbb::concurrent_vector<double> data;
     tbb::concurrent_vector<int> row_id;
     std::vector<int> col_ptr;
@@ -102,7 +101,7 @@ SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
         tbb::blocked_range<int>(0, B.col_ptr.size() - 1),
         [&](const tbb::blocked_range<int>& range) {
             for (int j = range.begin(); j < range.end(); j++) {
-                std::fill(temp.begin(), temp.end(), 0);
+                std::vector<double> temp(A.col_ptr.size() - 1, 0);
                 for (int k = B.col_ptr[j]; k < B.col_ptr[j + 1]; k++) {
                     int row = B.row_id[k];
                     double val = B.data[k];
