@@ -88,7 +88,7 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
     return C;
 }
 
-parceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
+SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     SparceMatrix C;
     tbb::combinable<tbb::concurrent_vector<double>> data_comb;
     tbb::combinable<tbb::concurrent_vector<int>> row_id_comb;
