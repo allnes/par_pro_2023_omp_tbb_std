@@ -9,7 +9,7 @@
 #include <random>
 #include <utility>
 
-
+#define THREADS 4
 
 bool checkSort(std::vector<int> arr) {
     return std::is_sorted(std::begin(arr), std::end(arr));
@@ -26,7 +26,7 @@ void countSort(std::vector<int> *vec, int exp) {
     int size = vec->size();
     std::vector<int> output(size);
     int i, count[10] = { 0 };
-
+    tbb::task_arena arena(THREADS);
     tbb::parallel_for(
         tbb::blocked_range<int>(0, size, 4),
         [&](const tbb::blocked_range<int>& v) {
@@ -34,7 +34,7 @@ void countSort(std::vector<int> *vec, int exp) {
                 count[(vec->at(i) / exp) % 10]++;
             }
         });
-
+    arena.terminate();
     for (i = 1; i < 10; i++) {
         count[i] += count[i - 1];
     }
@@ -49,7 +49,7 @@ void countSort(std::vector<int> *vec, int exp) {
 
 int getMax(std::vector<int> *vec) {
     int size = vec->size();
-
+    tbb::task_arena arena(THREADS);
     int maxVal = tbb::parallel_reduce(
         tbb::blocked_range<int> (1, size),
         vec->at(0),
@@ -64,7 +64,7 @@ int getMax(std::vector<int> *vec) {
         [](int x, int y) {
             return std::max<int>(x, y);
         });
-
+    arena.terminate();
     return maxVal;
 }
 
@@ -83,6 +83,7 @@ std::vector<int> EvenOddBatch(std::vector<int> vec1, std::vector<int> vec2) {
         k++;
     }
 
+    tbb::task_arena arena(THREADS);
     if ((k >= size2) && (j < size1)) {
         tbb::parallel_for(
             tbb::blocked_range<int> (i, size),
@@ -103,7 +104,7 @@ std::vector<int> EvenOddBatch(std::vector<int> vec1, std::vector<int> vec2) {
             }
         }
     });
-
+    arena.terminate();
 
     return res;
 }
