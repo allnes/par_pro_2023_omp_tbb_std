@@ -26,7 +26,7 @@ TEST(Tbb, test1) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < eps);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
     }
 }
 
@@ -52,7 +52,7 @@ TEST(Tbb, test2) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < eps);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
     }
 }
 
@@ -76,7 +76,7 @@ TEST(Tbb, test3) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < eps);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
     }
 }
 TEST(Tbb, test4) {
@@ -100,7 +100,7 @@ TEST(Tbb, test4) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < eps);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
     }
 }
 TEST(Tbb, test5) {
@@ -123,7 +123,7 @@ TEST(Tbb, test5) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < eps);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
     }
 }
 

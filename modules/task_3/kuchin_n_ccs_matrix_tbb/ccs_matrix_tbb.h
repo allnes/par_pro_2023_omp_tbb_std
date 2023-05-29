@@ -6,7 +6,7 @@
 
 #include <vector>
 
-double eps = DBL_MAX;
+double epso = DBL_MAX;
 struct SparceMatrix {
     int n;
     std::vector<double> data;
