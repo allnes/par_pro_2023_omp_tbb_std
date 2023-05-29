@@ -6,6 +6,7 @@
 
 #include "./ccs_matrix_tbb.h"
 
+double epso = DBL_MAX;
 TEST(Tbb, test1) {
     SparceMatrix A;
     A.n = 3;

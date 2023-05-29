@@ -5,8 +5,6 @@
 #include <float.h>
 
 #include <vector>
-
-double epso = DBL_MAX;
 struct SparceMatrix {
     int n;
     std::vector<double> data;
