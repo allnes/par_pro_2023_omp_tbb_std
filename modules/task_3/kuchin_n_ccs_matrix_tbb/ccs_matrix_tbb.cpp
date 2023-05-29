@@ -90,8 +90,9 @@ SparceMatrix multiply(SparceMatrix A, SparceMatrix B) {
 
 SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     SparceMatrix C;
-    tbb::combinable<tbb::concurrent_vector<double>> data_comb;
-    tbb::combinable<tbb::concurrent_vector<int>> row_id_comb;
+    tbb::concurrent_vector<double> temp(A.col_ptr.size() - 1);
+    tbb::concurrent_vector<double> data;
+    tbb::concurrent_vector<int> row_id;
     std::vector<int> col_ptr;
     tbb::queuing_mutex col_ptr_mutex;
 
@@ -100,11 +101,8 @@ SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
     tbb::parallel_for(
         tbb::blocked_range<int>(0, B.col_ptr.size() - 1),
         [&](const tbb::blocked_range<int>& range) {
-            tbb::concurrent_vector<double>& data = data_comb.local();
-            tbb::concurrent_vector<int>& row_id = row_id_comb.local();
             for (int j = range.begin(); j < range.end(); j++) {
-                // Создаем локальный вектор temp для каждого потока
-                std::vector<double> temp(A.col_ptr.size() - 1, 0);
+                std::fill(temp.begin(), temp.end(), 0);
                 for (int k = B.col_ptr[j]; k < B.col_ptr[j + 1]; k++) {
                     int row = B.row_id[k];
                     double val = B.data[k];
@@ -127,20 +125,9 @@ SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B) {
                 }
             }
         });
-    std::vector<double> data;
-    std::vector<int> row_id;
-    data_comb.combine_each(
-        [&](const tbb::concurrent_vector<double>& local_data) {
-            data.insert(data.end(), local_data.begin(), local_data.end());
-        });
-    row_id_comb.combine_each(
-        [&](const tbb::concurrent_vector<int>& local_row_id) {
-            row_id.insert(row_id.end(), local_row_id.begin(),
-                          local_row_id.end());
-        });
 
-    C.data = data;
-    C.row_id = row_id;
+    C.data = std::vector<double>(data.begin(), data.end());
+    C.row_id = std::vector<int>(row_id.begin(), row_id.end());
     C.col_ptr = col_ptr;
     C.n = A.col_ptr.size() - 1;
     return C;

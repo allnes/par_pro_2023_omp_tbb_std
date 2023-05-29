@@ -3,6 +3,10 @@
 #define MODULES_TASK_3_KUCHIN_N_CCS_MATRIX_TBB_CCS_MATRIX_TBB_H_
 
 #include <vector>
+
+#include "float.h"
+
+double eps = DBL_MAX;
 struct SparceMatrix {
     int n;
     std::vector<double> data;
