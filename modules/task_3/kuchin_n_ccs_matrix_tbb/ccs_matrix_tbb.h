@@ -12,7 +12,7 @@ struct SparceMatrix {
     std::vector<int> col_ptr;
 };
 
-SparceMatrix transport(SparceMatrix A);
+SparceMatrix transport(SparceMatrix Ant);
 SparceMatrix multiply(SparceMatrix A, SparceMatrix B);
 SparceMatrix tbbmultiply(SparceMatrix A, SparceMatrix B);
 #endif  // MODULES_TASK_3_KUCHIN_N_CCS_MATRIX_TBB_CCS_MATRIX_TBB_H_

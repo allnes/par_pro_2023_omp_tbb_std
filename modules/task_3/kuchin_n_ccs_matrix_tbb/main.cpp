@@ -6,7 +6,7 @@
 
 #include "./ccs_matrix_tbb.h"
 
-double epso = DBL_MAX;
+double epsonn = DBL_MAX;
 TEST(Tbb, test1) {
     SparceMatrix A;
     A.n = 3;
@@ -27,7 +27,7 @@ TEST(Tbb, test1) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epson);
     }
 }
 
@@ -53,7 +53,7 @@ TEST(Tbb, test2) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epson);
     }
 }
 
@@ -77,7 +77,7 @@ TEST(Tbb, test3) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epson);
     }
 }
 TEST(Tbb, test4) {
@@ -101,7 +101,7 @@ TEST(Tbb, test4) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epson);
     }
 }
 TEST(Tbb, test5) {
@@ -124,7 +124,7 @@ TEST(Tbb, test5) {
     SparceMatrix res1 = tbbmultiply(A, B);
     for (int i = 0; i < C.data.size(); i++) {
         ASSERT_TRUE(fabs(C.data[i] - res.data[i]) < 10.0);
-        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epso);
+        ASSERT_TRUE(fabs(C.data[i] - res1.data[i]) < epson);
     }
 }
 

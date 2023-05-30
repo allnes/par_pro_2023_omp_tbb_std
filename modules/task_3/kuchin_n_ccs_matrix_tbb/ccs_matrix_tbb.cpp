@@ -10,29 +10,29 @@
 #include <cmath>
 #include <vector>
 
-SparceMatrix transport(SparceMatrix A) {
+SparceMatrix transport(SparceMatrix Ant) {
     SparceMatrix AT;
-    AT.n = A.n;
+    AT.n = Ant.n;
     std::vector<std::vector<int>> row;
     std::vector<std::vector<double>> val;
     std::vector<int> emptyr;
     std::vector<double> emptyv;
-    for (int i = 0; i < A.n; i++) {
+    for (int i = 0; i < Ant.n; i++) {
         row.push_back(emptyr);
         val.push_back(emptyv);
     }
     std::vector<int> js;
     int f = 0;
 
-    for (int i = 1; i < A.n + 1; i++) {
-        for (int j = 0; j < A.col_ptr[i] - A.col_ptr[i - 1]; j++) {
+    for (int i = 1; i < Ant.n + 1; i++) {
+        for (int j = 0; j < Ant.col_ptr[i] - Ant.col_ptr[i - 1]; j++) {
             js.push_back(f);
         }
         f++;
     }
     for (int i = 0; i < js.size(); i++) {
-        row[A.row_id[i]].push_back(js[i]);
-        val[A.row_id[i]].push_back(A.data[i]);
+        row[Ant.row_id[i]].push_back(js[i]);
+        val[Ant.row_id[i]].push_back(Ant.data[i]);
     }
 
     std::vector<int> resrow;
@@ -51,8 +51,8 @@ SparceMatrix transport(SparceMatrix A) {
         indic += row[i].size();
         ind.push_back(indic);
     }
-    if (row.size() < A.n) {
-        for (int i = 0; i < A.n - row.size(); i++) {
+    if (row.size() < Ant.n) {
+        for (int i = 0; i < Ant.n - row.size(); i++) {
             ind.push_back(indic);
         }
     }
