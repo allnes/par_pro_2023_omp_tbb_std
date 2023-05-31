@@ -14,7 +14,7 @@ std::vector<double> getRandomMatrix(int m, int n) {
     return vec;
 }
 
-int getMaxDimension(int m1, int n1, int m2, int n2) {
+int getNewSize(int m1, int n1, int m2, int n2) {
     return std::max(std::max(std::max(m1, n1), m2), n2);
 }
 
