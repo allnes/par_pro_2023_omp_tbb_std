@@ -4,9 +4,7 @@
 int check_orientation(Point i, Point j, Point k) {
   int value = (j.y - i.y) * (k.x - j.x) - (j.x - i.x) * (k.y - j.y);
   if (value == 0) return 0;
-  // Коллинеарен
   return (value > 0) ? 1 : 2;
-  // Ориентируется по-часовой стрелке, или против часовой стрелки
 }
 
 std::vector<Point> get_convex_body(const std::vector<Point>& p_arr) {
@@ -14,7 +12,7 @@ std::vector<Point> get_convex_body(const std::vector<Point>& p_arr) {
   if (size < 3) return std::vector<Point>();
   std::vector<Point> convex_body;
   int a = 0;
-  for (int i = 1; i < n; i++) {
+  for (int i = 1; i < size; i++) {
     if (p_arr[i].x < p_arr[a].x) {
       a = i;
     }
@@ -27,12 +25,12 @@ std::vector<Point> get_convex_body(const std::vector<Point>& p_arr) {
     b = (change + 1) % size;
     for (int i = 0; i < size; i++) {
       if (check_orientation(p_arr[change], p_arr[i], p_arr[b]) == 2) {
-        q = i;
+        b = i;
       }
     }
     change = b;
   }
 
-  while (a != change) {}
+  while (a != change); {}
   return convex_body;
 }
