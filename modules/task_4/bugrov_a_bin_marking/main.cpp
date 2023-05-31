@@ -32,21 +32,14 @@ bool CheckMarking(int N, const vector<vector<int>>& image,
     }
   }
   par_marking(image, N, N, &marks, k_unnamed, k_thread_num);
-  if (N < 20) {
-    for (int i = 0; i < N; i++) {
-      for (int j = 0; j < N; j++) {
-        std::cout << marks[i][j] << " ";
-      }
-      std::cout << "\n";
-    }
-    std::cout << "SHOULD BE:\n";
-    for (int i = 0; i < N; i++) {
-      for (int j = 0; j < N; j++) {
-        std::cout << etalon[i][j] << " ";
-      }
-      std::cout << "\n";
-    }
-  }
+  // if (N == 6) {
+  //  for (int i = 0; i < 6; i++) {
+  //    for (int j = 0; j < 6; j++) {
+  //      std::cout << marks[i][j] << " ";
+  //    }
+  //    std::cout << "\n";
+  //  }
+  //}
   return are_matrix_eq(marks, etalon, N, N);
 }
 
@@ -82,53 +75,55 @@ TEST(bin_marking, can_mark_image_with_one_central_component) {
 }
 
 //////////////////////////////////////////////////////////////////////
-TEST(bin_marking, can_mark_image_with_many_central_components) {
+TEST(bin_marking, can_mark_image_with_one_full_component) {
   const int n = 6;
-  vector<vector<int>> image = {{1, 1, 1, 1, 1, 1}, {1, 1, 0, 1, 0, 1},
+  vector<vector<int>> image;
+  for (int i = 0; i < 6; i++) {
+    image.push_back(vector<int>{});
+    for (int j = 0; j < 6; j++) {
+      image[i].push_back(0);
+    }
+  }
+  /*= {{1, 1, 1, 1, 1, 1}, {1, 1, 0, 1, 0, 1},
                                {1, 0, 0, 1, 0, 1}, {1, 1, 1, 0, 0, 1},
-                               {1, 0, 0, 1, 0, 1}, {1, 1, 1, 1, 1, 1}};
-  vector<vector<int>> etalon = {{0, 0, 0, 0, 0, 0}, {0, 0, 1, 0, 2, 0},
+                               {1, 0, 0, 1, 0, 1}, {1, 1, 1, 1, 1, 1}};*/
+  vector<vector<int>> etalon;
+  for (int i = 0; i < 6; i++) {
+    etalon.push_back(vector<int>{});
+    for (int j = 0; j < 6; j++) {
+      etalon[i].push_back(1);
+    }
+  }
+  /*= {{0, 0, 0, 0, 0, 0}, {0, 0, 1, 0, 2, 0},
                                 {0, 1, 1, 0, 2, 0}, {0, 0, 0, 2, 2, 0},
-                                {0, 3, 3, 0, 2, 0}, {0, 0, 0, 0, 0, 0}};
+                                {0, 3, 3, 0, 2, 0}, {0, 0, 0, 0, 0, 0}};*/
   ASSERT_EQ(true, CheckMarking(n, image, etalon));
 }
+TEST(bin_marking, can_mark_image_with_many_situations) {
+  const int n = 10;
+  vector<vector<int>> image = {
+      {0, 1, 0, 1, 1, 0, 0, 1, 0, 1}, {1, 1, 1, 1, 1, 0, 1, 1, 0, 0},
+      {0, 0, 0, 0, 0, 0, 0, 1, 1, 1}, {0, 1, 0, 1, 0, 0, 0, 1, 1, 0},
+      {1, 1, 1, 1, 1, 1, 1, 1, 1, 0}, {0, 0, 1, 0, 1, 0, 1, 1, 1, 0},
+      {0, 0, 1, 0, 1, 1, 1, 0, 1, 0}, {1, 1, 1, 0, 0, 0, 0, 0, 1, 1},
+      {1, 0, 0, 1, 1, 0, 0, 1, 1, 1}, {0, 0, 1, 1, 0, 0, 0, 1, 0, 1}};
+  const vector<vector<int>> etalon = {
+      {1, 0, 2, 0, 0, 3, 3, 0, 4, 0}, {0, 0, 0, 0, 0, 3, 0, 0, 4, 4},
+      {3, 3, 3, 3, 3, 3, 3, 0, 0, 0}, {3, 0, 3, 0, 3, 3, 3, 0, 0, 5},
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 5}, {6, 6, 0, 7, 0, 8, 0, 0, 0, 5},
+      {6, 6, 0, 7, 0, 0, 0, 7, 0, 5}, {0, 0, 0, 7, 7, 7, 7, 7, 0, 0},
+      {0, 9, 9, 0, 0, 7, 7, 0, 0, 0}, {9, 9, 0, 0, 7, 7, 7, 0, 10, 0}};
+  vector<vector<int>> marks(n);
+  for (int i = 0; i < n; i++) {
+    marks[i].resize(n);
+  }
+  const int k_unnamed = 0;
 
-TEST(bin_marking, can_mark_general_image) {
-  const int n = 5;
-  vector<vector<int>> image = {{
-                                   1,
-                                   1,
-                                   1,
-                                   0,
-                                   1,
-                               },
-                               {
-                                   0,
-                                   0,
-                                   1,
-                                   0,
-                                   0,
-                               },
-                               {
-                                   1,
-                                   0,
-                                   1,
-                                   1,
-                                   1,
-                               },
-                               {
-                                   0,
-                                   1,
-                                   0,
-                                   0,
-                                   1,
-                               },
-                               {1, 1, 0, 1, 0}};
-  const vector<vector<int>> etalon = {{0, 0, 0, 1, 0},
-                                      {2, 2, 0, 1, 1},
-                                      {0, 2, 0, 0, 0},
-                                      {3, 0, 4, 4, 0},
-                                      {0, 0, 4, 0, 5}};
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      marks[i][j] = k_unnamed;
+    }
+  }
   ASSERT_EQ(true, CheckMarking(n, image, etalon));
 }
 

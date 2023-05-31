@@ -53,7 +53,6 @@ void seq_marking(const vector<vector<int>>& image, const int n, const int m,
   }
 }
 
-// +
 void first_par_pass(int** p_image, R* card, int n, int m, const int k_back,
                     int offset) {
   for (int i = offset; i < n; i++) {
@@ -77,130 +76,112 @@ void first_par_pass(int** p_image, R* card, int n, int m, const int k_back,
   }
 }
 
-//-
-// prev or next left != prev or next right
-void second_par_pass(R* card, int n, int m, int offset) {
-  const int w = m / 2 + 1;  // width of card
-  bool right_exists = false;
+void find_neighbours(R* card, int i, int j, int n, int m, int neighbour) {
   bool was_in_while = false;
-  for (int i = offset; i < n; i++) {
-    int j = 0;
-    // finding all segments in row
-    while (j < w && card[i * w + j].L != 0) {
-      int to_find_adjacent_segment = (i - 1) * w;
-      // finding left neighbour in (i-1)-th row
-      while (i > 0 && to_find_adjacent_segment < i * w &&
-             card[to_find_adjacent_segment].L != 0 &&
-             card[to_find_adjacent_segment].p_right % m <
-                 card[i * w + j].p_left % m) {
-        to_find_adjacent_segment++;
-      }
-      if (i > 0 && to_find_adjacent_segment <= i * w &&
-          card[to_find_adjacent_segment].L > 0 &&
-          card[to_find_adjacent_segment].p_left % m <=
-              card[i * w + j].p_right % m) {
+  const int w = m / 2 + 1;  // width of card
+  int to_find_adjacent_segment = neighbour * w;
+  int bound;
+  if (neighbour > i) {
+    bound = n - 1;
+  } else {
+    bound = 0;
+  }
+  if (i != bound) {
+    // finding left neighbour
+    while (to_find_adjacent_segment < (neighbour + 1) * w &&
+           card[to_find_adjacent_segment].L != 0 &&
+           card[to_find_adjacent_segment].p_right % m <
+               card[i * w + j].p_left % m) {
+      to_find_adjacent_segment++;
+    }
+    if (to_find_adjacent_segment < (neighbour + 1) * w &&
+        card[to_find_adjacent_segment].L != 0 &&
+        card[to_find_adjacent_segment].p_left % m <=
+            card[i * w + j].p_right % m) {
+      if (neighbour < i) {
         card[i * w + j].L_prev_left = card[to_find_adjacent_segment].L;
-        to_find_adjacent_segment++;
-
-        // finding right neighbour in (i-1)-th row
-        while (card[to_find_adjacent_segment].L != 0 &&
-               to_find_adjacent_segment < i * w &&
-               card[to_find_adjacent_segment].p_left % m <=
-                   card[i * w + j].p_right % m) {
-          to_find_adjacent_segment++;
-          was_in_while = true;
-        }
-        if (was_in_while) {
-          if (to_find_adjacent_segment < i * w + 1) {
-            // it is not nesessary  to check does
-            // card[to_find_adjacent_segment-1].L != 0 or not because at
-            // least one iteration (with  to_find_adjacent_segment-1 was
-            // performed
-            card[i * w + j].L_prev_right = card[to_find_adjacent_segment - 1].L;
-          }
-        } else {
-          if (card[to_find_adjacent_segment].p_left % m <=
-                  card[i * w + j].p_right % m &&
-              card[to_find_adjacent_segment].L != 0 &&
-              to_find_adjacent_segment < i * w) {
-            card[i * w + j].L_prev_right = card[to_find_adjacent_segment].L;
-          }
-        }
-        was_in_while = false;
-      }
-
-      to_find_adjacent_segment = (i + 1) * w;
-
-      // finding left neighbour in (i+1)-th row
-      while (i < n - 1 && to_find_adjacent_segment < (i + 2) * w &&
-             card[to_find_adjacent_segment].L != 0 &&
-             card[to_find_adjacent_segment].p_right % m <
-                 card[i * w + j].p_left % m) {
-        to_find_adjacent_segment++;
-      }
-      if (i < n - 1 && to_find_adjacent_segment <= (i + 2) * w &&
-          card[to_find_adjacent_segment].L != 0 &&
-          card[to_find_adjacent_segment].p_left % m <=
-              card[i * w + j].p_right % m) {
+      } else {
         card[i * w + j].L_next_left = card[to_find_adjacent_segment].L;
+      }
+      to_find_adjacent_segment++;
+      // finding right neighbour
+      while (card[to_find_adjacent_segment].L != 0 &&
+             to_find_adjacent_segment < (neighbour + 1) * w &&
+             card[to_find_adjacent_segment].p_left % m <=
+                 card[i * w + j].p_right % m) {
         to_find_adjacent_segment++;
-        // finding right neighbour in (i+1)-th row
-        while (card[to_find_adjacent_segment].L != 0 &&
-               card[to_find_adjacent_segment].p_left % m <=
-                   card[i * w + j].p_right % m) {
-          to_find_adjacent_segment++;
-          was_in_while = true;
-        }
-        if (card[to_find_adjacent_segment].L != 0 &&
-            to_find_adjacent_segment < (i + 2) * w) {
-          if (was_in_while) {
-            if (card[to_find_adjacent_segment - 1].p_left % m <=
-                card[i * w + j].p_right % m) {
-              card[i * w + j].L_next_right =
-                  card[to_find_adjacent_segment - 1].L;
-            }
+        was_in_while = true;
+      }
+      if (was_in_while) {
+        if (to_find_adjacent_segment - 1 < (neighbour + 1) * w) {
+          // it is not nesessary to check
+          // card[to_find_adjacent_segment-1].L != 0 and or not because at
+          // least one iteration (with  to_find_adjacent_segment-1) was
+          // performed
+          if (neighbour < i) {
+            card[i * w + j].L_prev_right = card[to_find_adjacent_segment - 1].L;
           } else {
-            if (card[to_find_adjacent_segment].p_left % m <=
-                card[i * w + j].p_right % m) {
-              card[i * w + j].L_next_right = card[to_find_adjacent_segment].L;
-            }
+            card[i * w + j].L_next_right = card[to_find_adjacent_segment - 1].L;
           }
-          was_in_while = false;
         }
       }
-      j++;
     }
   }
 }
-void third_par_pass(R* card, int n, int m, int offset) {
-  bool been_changed = false;
-  int w = m / 2 + 1;
-  do {
-    been_changed = false;
-    // labels - private
-    for (int i = offset; i < n; i++) {
-      for (int j = 0; j < w && card[i * w + j].L > 0; j++) {
-        int cur_id = i * w + j;
-        size_t labels[4] = {card[cur_id].L_prev_left, card[cur_id].L_prev_right,
-                            card[cur_id].L_next_left,
-                            card[cur_id].L_next_right};
-        size_t cur_min = UINT64_MAX;
-        for (int p = 0; p < 4; p++) {
-          if (labels[p] != 0 && labels[p] < cur_min) {
-            cur_min = labels[p];
-          }
-        }
-        if (cur_min < card[cur_id].L) {
-          card[cur_id].L = min(card[card[cur_id].L - 1].L, cur_min);
-          been_changed = true;
-        }
-      }
+void second_par_pass(R* card, int n, int m, int offset) {
+  const int w = m / 2 + 1;  // width of card
+  for (int i = offset; i < n; i++) {
+    int j = 0;
+    // finding all segments in row
+    for (int j = 0; j < w && card[i * w + j].L != 0; j++) {
+      find_neighbours(card, i, j, n, m, i - 1);
+      find_neighbours(card, i, j, n, m, i + 1);
     }
-  } while (been_changed);
+  }
 }
 
-//+
-// TO DO: make a documentation
+void third_par_pass(R* card, int n, int m, int offset, bool* been_changed) {
+  // labels - private
+  size_t w = m / 2 + 1;
+  // std::cout << offset << " ";
+  for (int i = offset; i < n; i++) {
+    for (int j = 0; j < w && card[i * w + j].L > 0; j++) {
+      int cur_id = i * w + j;
+      size_t labels[4];
+      if (card[cur_id].L_prev_left != 0) {
+        labels[0] = card[card[cur_id].L_prev_left - 1].L;
+      } else {
+        labels[0] = UINT64_MAX;
+      }
+      if (card[cur_id].L_prev_right != 0) {
+        labels[1] = card[card[cur_id].L_prev_right - 1].L;
+      } else {
+        labels[1] = UINT64_MAX;
+      }
+      if (card[cur_id].L_next_left != 0) {
+        labels[2] = card[card[cur_id].L_next_left - 1].L;
+      } else {
+        labels[2] = UINT64_MAX;
+      }
+      if (card[cur_id].L_next_right != 0) {
+        labels[3] = card[card[cur_id].L_next_right - 1].L;
+      } else {
+        labels[3] = UINT64_MAX;
+      }
+      size_t cur_min = UINT64_MAX;
+      for (int p = 0; p < 4; p++) {
+        if (labels[p] != 0 && labels[p] < cur_min) {
+          cur_min = labels[p];
+        }
+      }
+      if (cur_min < card[cur_id].L) {
+        card[cur_id].L = min(card[card[cur_id].L - 1].L, cur_min);
+        (*been_changed) = true;
+      }
+    }
+  }
+}
+
 void forth_par_pass(R* card, int n, int m, int offset) {
   size_t w = m / 2 + 1;
   for (int i = offset; i < n; i++) {
@@ -217,9 +198,6 @@ void forth_par_pass(R* card, int n, int m, int offset) {
     }
   }
 }
-
-//-
-// TO DO: make a documentation
 void mark_assign_pass(R* card, vector<vector<int>>* p_marks, int n, int m) {
   size_t w = m / 2 + 1;
   // real_numbers[counter] = label of component which should be named as counter
@@ -272,8 +250,8 @@ void parallel_passes(int** image, R* card, const int n, const int m,
                      const int k_back, int offset) {
   first_par_pass(image, card, n, m, k_back, offset);
   second_par_pass(card, n, m, offset);
-  third_par_pass(card, n, m, offset);
-  forth_par_pass(card, n, m, offset);
+  /*third_par_pass(card, n, m, offset);
+  forth_par_pass(card, n, m, offset);*/
 }
 
 void par_marking(const vector<vector<int>>& image, const int n, const int m,
@@ -283,7 +261,7 @@ void par_marking(const vector<vector<int>>& image, const int n, const int m,
   const int k_back = 1;  // backround of image (white color)
   std::thread* workers = new std::thread[thread_num];
   int part = n / thread_num;
-  int remainder = n % thread_num;
+  // int remainder = n % thread_num;
   R* card = new R[(m / 2 + 1) * n];
   int** p_image = new int*[n];
   for (int i = 0; i < n; i++) {
@@ -303,10 +281,46 @@ void par_marking(const vector<vector<int>>& image, const int n, const int m,
   for (int i = 0; i < thread_num; i++) {
     workers[i].join();
   }
+  offset = 0;
+  for (int i = 0; i < thread_num - 1; i++) {
+    workers[i] = std::thread(second_par_pass, card, part + offset, m, offset);
+    offset += part;
+  }
+  offset = (thread_num - 2) * part;
+  workers[thread_num - 1] = std::thread(second_par_pass, card, n, m, offset);
+  for (int i = 0; i < thread_num; i++) {
+    workers[i].join();
+  }
   for (int i = 0; i < n; i++) {
     delete[] p_image[i];
   }
   delete[] p_image;
+  bool been_changed;
+
+  do {
+    offset = 0;
+    been_changed = false;
+    for (int i = 0; i < thread_num - 1; i++) {
+      workers[i] = std::thread(third_par_pass, card, part + offset, m, offset,
+                               &been_changed);
+      offset += part;
+    }
+    offset = (thread_num - 2) * part;
+    workers[thread_num - 1] =
+        std::thread(third_par_pass, card, n, m, offset, &been_changed);
+    for (int i = 0; i < thread_num; i++) {
+      workers[i].join();
+    }
+  } while (been_changed);
+  offset = 0;
+
+  forth_par_pass(card, n, m, 0);
+  int out_card[n][m];
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      out_card[i][j] = 0;
+    }
+  }
   // should be non-parallel
   mark_assign_pass(card, marks, n, m);
   delete[] workers;
