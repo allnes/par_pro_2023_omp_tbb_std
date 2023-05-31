@@ -1,5 +1,6 @@
 // Copyright 2023 Bugrov Andrey
 #include "../../../modules/task_4/bugrov_a_bin_marking/bin_marking.h"
+
 #include "../../../3rdparty/unapproved/unapproved.h"
 
 // matrixes can be both vectors and arrays
@@ -106,8 +107,8 @@ void find_neighbours(R* card, int i, int j, int n, int m, int neighbour) {
       }
       to_find_adjacent_segment++;
       // finding right neighbour
-      while (card[to_find_adjacent_segment].L != 0 &&
-             to_find_adjacent_segment < (neighbour + 1) * w &&
+      while (to_find_adjacent_segment < (neighbour + 1) * w &&
+             card[to_find_adjacent_segment].L != 0 &&
              card[to_find_adjacent_segment].p_left % m <=
                  card[i * w + j].p_right % m) {
         to_find_adjacent_segment++;
