@@ -14,8 +14,8 @@ std::vector<double> getRandomMatrix(int m, int n) {
     return vec;
 }
 
-int getNewSize(int m1, int n1, int m2, int n2) {
-    return std::max({m1, n1, m2, n2});
+int getMaxDimension(int m1, int n1, int m2, int n2) {
+    return std::max(std::max(std::max(m1, n1), m2), n2);
 }
 
 std::vector<double> appendZeros(const std::vector<double>& mat, int m, int n, int new_size) {
