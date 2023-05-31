@@ -6,7 +6,7 @@
 #include <functional>
 #include <utility>
 #include <chrono>
-#include "./simpson_method.h"
+#include "./simpson.h"
 
 TEST(Simson_Method_STD, Can_Integrate_One_Dim_Func) {
     std::function<double(const std::vector<double>&)> f = [](const std::vector<double>& vec){

@@ -1,5 +1,5 @@
 // Copyright 2023 Blitkina Maria
-#include "../../../modules/task_4/bykovskaya_a_simpson_method/simpson_method.h"
+#include "../../../modules/task_4/blitkina_m_simpson/simpson.h"
 #include <vector>
 #include <functional>
 #include <utility>
