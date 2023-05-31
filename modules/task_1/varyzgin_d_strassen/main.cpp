@@ -46,6 +46,17 @@ TEST(TestsStrassenSeq, Test4on4) {
     eq(C, Strassen);
 }
 
+TEST(TestsStrassenSeq, Test8on8) {
+    int n = 8;
+    std::vector<double> A = genVec(n * n);
+    std::vector<double> B = genVec(n * n);
+
+    std::vector<double> C = mult(A, B, n);
+    std::vector<double> Strassen = strassen(A, B, n);
+
+    eq(C, Strassen);
+}
+
 TEST(TestsStrassenSeq, Test16on16) {
     int n = pow(2, 4);
     std::vector<double> A = genVec(n * n);
