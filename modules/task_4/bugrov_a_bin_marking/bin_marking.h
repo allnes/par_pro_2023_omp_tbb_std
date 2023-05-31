@@ -7,7 +7,6 @@
 #include <map>        // pairs
 #include <queue>      // queue for Depth-first search
 #include <random>     // mt19937
-#include <thread>     // thread
 #include <vector>     // vector
 using std::min;
 using std::mt19937;
