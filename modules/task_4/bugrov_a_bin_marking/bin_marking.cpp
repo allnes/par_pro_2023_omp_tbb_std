@@ -1,6 +1,6 @@
 // Copyright 2023 Bugrov Andrey
 #include "../../../modules/task_4/bugrov_a_bin_marking/bin_marking.h"
-#include "../../../3rdparty/unapproved/unapproved.h
+#include "../../../3rdparty/unapproved/unapproved.h"
 
 // matrixes can be both vectors and arrays
 
