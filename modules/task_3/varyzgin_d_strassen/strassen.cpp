@@ -1,31 +1,21 @@
 // Copyright 2023 Varyzgin Dmitry
 #include "../../../modules/task_3/varyzgin_d_strassen/strassen.h"
 
-std::vector<double> genRandomVector(int n) {
+std::vector<double> genVec(int n) {
     std::random_device rd;
     std::mt19937 gen(rd());
+    // gen of digits with Uniform distribution:
     std::uniform_real_distribution<double> dis(0.0, 9.0);
-
     std::vector<double> vec(n);
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
         vec[i] = dis(gen);
-    }
 
     return vec;
 }
 
-void printMatrix(const std::vector<double>& Mat, std::size_t n) {
-    for (std::size_t i = 0; i < n; i++) {
-        for (std::size_t j = 0; j < n; j++) {
-            std::cout << Mat[i * n + j] << " ";
-        }
-        std::cout << '\n';
-    }
-}
-
-// Matrices A and B have sizes n x n and are represented as vectors
-std::vector<double> usualMultiply(const std::vector<double>& A,
+// mult matrices with n*n dimmentions
+std::vector<double> mult(const std::vector<double>& A,
                                const std::vector<double>& B, int n) {
     std::vector<double> C(n * n, 0);
 
@@ -51,16 +41,15 @@ std::vector<double> sub(const std::vector<double>& A, const std::vector<double>&
     return C;
 }
 
-// Matrices A and B have sizes n x n and are represented as vectors
-std::vector<double> seqStrassenMultiply(const std::vector<double>& A,
+std::vector<double> strassen(const std::vector<double>& A,
                                   const std::vector<double>& B, std::size_t n) {
-    // Basic case
+    // if it is digits
     if (n == 1) {
         std::vector<double> C = {A[0] * B[0]};
         return C;
     }
 
-    // Splitting matrices into submatrices
+    // submatrices
     std::size_t m = n / 2;
     std::vector<double> A11(m * m), A12(m * m), A21(m * m), A22(m * m);
     std::vector<double> B11(m * m), B12(m * m), B21(m * m), B22(m * m);
@@ -77,16 +66,16 @@ std::vector<double> seqStrassenMultiply(const std::vector<double>& A,
         }
     }
 
-    // Recursive calls for submatrices
-    std::vector<double> P1 = seqStrassenMultiply(A11, sub(B12, B22), m);
-    std::vector<double> P2 = seqStrassenMultiply(add(A11, A12), B22, m);
-    std::vector<double> P3 = seqStrassenMultiply(add(A21, A22), B11, m);
-    std::vector<double> P4 = seqStrassenMultiply(A22, sub(B21, B11), m);
-    std::vector<double> P5 = seqStrassenMultiply(add(A11, A22), add(B11, B22), m);
-    std::vector<double> P6 = seqStrassenMultiply(sub(A12, A22), add(B21, B22), m);
-    std::vector<double> P7 = seqStrassenMultiply(sub(A11, A21), add(B11, B12), m);
+    // reqursive multiplying
+    std::vector<double> P1 = strassen(A11, sub(B12, B22), m);
+    std::vector<double> P2 = strassen(add(A11, A12), B22, m);
+    std::vector<double> P3 = strassen(add(A21, A22), B11, m);
+    std::vector<double> P4 = strassen(A22, sub(B21, B11), m);
+    std::vector<double> P5 = strassen(add(A11, A22), add(B11, B22), m);
+    std::vector<double> P6 = strassen(sub(A12, A22), add(B21, B22), m);
+    std::vector<double> P7 = strassen(sub(A11, A21), add(B11, B12), m);
 
-    // Result calculation
+    // Giving res
     std::vector<double> C(n * n);
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < m; j++) {
@@ -102,16 +91,15 @@ std::vector<double> seqStrassenMultiply(const std::vector<double>& A,
     return C;
 }
 
-
-std::vector<double> tbbStrassenMultiply(const std::vector<double>& A,
+std::vector<double> strassenTbb(const std::vector<double>& A,
                                   const std::vector<double>& B, std::size_t n) {
-    // Basic case
+    // if it is digits
     if (n == 1) {
         std::vector<double> C = {A[0] * B[0]};
         return C;
     }
 
-    // Splitting matrices into submatrices
+    // submatrices
     std::size_t m = n / 2;
     std::vector<double> A11(m * m), A12(m * m), A21(m * m), A22(m * m);
     std::vector<double> B11(m * m), B12(m * m), B21(m * m), B22(m * m);
@@ -130,31 +118,32 @@ std::vector<double> tbbStrassenMultiply(const std::vector<double>& A,
     }
 
     std::vector<double> P1, P2, P3, P4, P5, P6, P7;
+    // reqursive multiplying tbb
 
     tbb::task_group taskGroup;
 
-    P1 = seqStrassenMultiply(A11, sub(B12, B22), m);
+    P1 = strassen(A11, sub(B12, B22), m);
     taskGroup.run([&] {
-        P2 = seqStrassenMultiply(add(A11, A12), B22, m);
+        P2 = strassen(add(A11, A12), B22, m);
     });
     taskGroup.run([&] {
-        P3 = seqStrassenMultiply(add(A21, A22), B11, m);
+        P3 = strassen(add(A21, A22), B11, m);
     });
     taskGroup.run([&] {
-        P4 = seqStrassenMultiply(A22, sub(B21, B11), m);
+        P4 = strassen(A22, sub(B21, B11), m);
     });
     taskGroup.run([&] {
-        P5 = seqStrassenMultiply(add(A11, A22), add(B11, B22), m);
+        P5 = strassen(add(A11, A22), add(B11, B22), m);
     });
     taskGroup.run([&] {
-        P6 = seqStrassenMultiply(sub(A12, A22), add(B21, B22), m);
+        P6 = strassen(sub(A12, A22), add(B21, B22), m);
     });
     taskGroup.run([&] {
-        P7 = seqStrassenMultiply(sub(A11, A21), add(B11, B12), m);
+        P7 = strassen(sub(A11, A21), add(B11, B12), m);
     });
     taskGroup.wait();
 
-    // Result calculation
+    // Giving res
     std::vector<double> C(n * n);
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < m; j++) {

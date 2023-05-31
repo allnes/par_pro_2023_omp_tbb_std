@@ -2,69 +2,64 @@
 #include <gtest/gtest.h>
 #include "./strassen.h"
 
-void ExpectNear(const std::vector<double>& vec1, const std::vector<double>& vec2) {
-    if (vec1.size() != vec2.size()) throw "Unequal dimensions";
+// eq with smth accuracy
+void eq(const std::vector<double>& vec1, const std::vector<double>& vec2) {
+    if (vec1.size() != vec2.size()) throw "non equal dimentions";
     for (std::size_t i = 0; i < vec1.size(); i++)
         EXPECT_NEAR(vec1[i], vec2[i], 0.0001);
 }
 
-// Testing on 1 x 1 non-random matrices
-TEST(TestsStrassenTBB, TestsStrassenTBB_1) {
+TEST(TestsStrassenTBB, Test1on1TBB) {
     int n = 1;
     std::vector<double> A = {2.0};
     std::vector<double> B = {3.0};
 
     std::vector<double> C = {6.0};
-    std::vector<double> CStrassenTBB = tbbStrassenMultiply(A, B, n);
+    std::vector<double> StrassenTBB = strassenTbb(A, B, n);
 
-    ExpectNear(C, CStrassenTBB);
+    eq(C, StrassenTBB);
 }
 
-// Testing on 2 x 2 non-random matrices
-TEST(TestsStrassenTBB, TestsStrassenTBB_2) {
+TEST(TestsStrassenTBB, Test2on2TBB) {
     int n = 2;
     std::vector<double> A = {1.0, 2.0, 3.0, 4.0};
     std::vector<double> B = {5.0, 6.0, 7.0, 8.0};
 
     std::vector<double> C = {19.0, 22.0, 43.0, 50.0};
-    std::vector<double> CStrassenTBB = tbbStrassenMultiply(A, B, n);
+    std::vector<double> StrassenTBB = strassenTbb(A, B, n);
 
-    ExpectNear(C, CStrassenTBB);
+    eq(C, StrassenTBB);
 }
 
-// Testing on 4 x 4 random matrices
-TEST(TestsStrassenTBB, TestsStrassenTBB_3) {
+TEST(TestsStrassenTBB, Test4on4TBB) {
     int n = 4;
-    std::vector<double> A = genRandomVector(n * n);
-    std::vector<double> B = genRandomVector(n * n);
+    std::vector<double> A = genVec(n * n);
+    std::vector<double> B = genVec(n * n);
 
-    std::vector<double> C = usualMultiply(A, B, n);
-    std::vector<double> CStrassenTBB = tbbStrassenMultiply(A, B, n);
+    std::vector<double> C = mult(A, B, n);
+    std::vector<double> StrassenTBB = strassenTbb(A, B, n);
 
-    ExpectNear(C, CStrassenTBB);
+    eq(C, StrassenTBB);
 }
 
-// Testing on 8 x 8 random matrices
-TEST(TestsStrassenTBB, TestsStrassenTBB_4) {
+TEST(TestsStrassenTBB, Test8on8TBB) {
     int n = 8;
-    std::vector<double> A = genRandomVector(n * n);
-    std::vector<double> B = genRandomVector(n * n);
+    std::vector<double> A = genVec(n * n);
+    std::vector<double> B = genVec(n * n);
 
-    std::vector<double> C = usualMultiply(A, B, n);
-    std::vector<double> CStrassenTBB = tbbStrassenMultiply(A, B, n);
+    std::vector<double> C = mult(A, B, n);
+    std::vector<double> StrassenTBB = strassenTbb(A, B, n);
 
-    ExpectNear(C, CStrassenTBB);
+    eq(C, StrassenTBB);
 }
 
-// Testing on 16 x 16 random matrices
-TEST(TestsStrassenTBB, TestsStrassenTBB_5) {
+TEST(TestsStrassenTBB, Test16on16TBB) {
     int n = 16;
-    std::vector<double> A = genRandomVector(n * n);
-    std::vector<double> B = genRandomVector(n * n);
+    std::vector<double> A = genVec(n * n);
+    std::vector<double> B = genVec(n * n);
 
-    std::vector<double> C = usualMultiply(A, B, n);
-    std::vector<double> CStrassenTBB = tbbStrassenMultiply(A, B, n);
+    std::vector<double> C = mult(A, B, n);
+    std::vector<double> StrassenTBB = strassenTbb(A, B, n);
 
-    ExpectNear(C, CStrassenTBB);
+    eq(C, StrassenTBB);
 }
-
