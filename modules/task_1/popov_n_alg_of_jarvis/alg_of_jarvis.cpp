@@ -29,8 +29,6 @@ std::vector<Point> get_convex_body(const std::vector<Point>& p_arr) {
       }
     }
     change = b;
-  }
-
-  while (a != change); {}
+  } while (a != change);
   return convex_body;
 }
