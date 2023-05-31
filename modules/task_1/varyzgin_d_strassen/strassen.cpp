@@ -1,150 +1,107 @@
 // Copyright 2023 Varyzgin Dmitry
-#include <vector>
-#include <random>
 #include "../../../modules/task_1/varyzgin_d_strassen/strassen.h"
 
-std::vector<double> getRandomMatrix(int m, int n) {
-    std::random_device dev;
-    std::mt19937 gen(dev());
-    std::vector<double> vec(m * n);
-    for (int i = 0; i < m * n; i++) { vec[i] = static_cast<double>(gen() % 100 + 1); }
+#include <iostream>
+#include <random>
+#include <vector>
+
+std::vector<double> genRandomVector(int n) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dis(0.0, 9.0);
+
+    std::vector<double> vec(n);
+
+    for (int i = 0; i < n; i++) {
+        vec[i] = dis(gen);
+    }
+
     return vec;
 }
 
-int getNewSize(int m1, int n1, int m2, int n2) {
-    int max = std::max(std::max(m1, n1), std::max(m2, n2));
-    int n = 1;
-    for (; max > n; n*=2) {}
-    return n;
+void printMatrix(const std::vector<double>& Mat, std::size_t n) {
+    for (std::size_t i = 0; i < n; i++) {
+        for (std::size_t j = 0; j < n; j++) {
+            std::cout << Mat[i * n + j] << " ";
+        }
+        std::cout << '\n';
+    }
 }
 
-std::vector<double> appendZeros(const std::vector<double>& mat, int m, int n, int new_size) {
-    std::vector<double> result((new_size) * (new_size));
+// Matrices A and B have sizes n x n and are represented as vectors
+std::vector<double> usualMultiply(const std::vector<double>& A,
+                               const std::vector<double>& B, int n) {
+    std::vector<double> C(n * n, 0);
 
-    for (int i = 0, j = 0; i < result.size(); ++i) {
-        if (i % new_size < n && j < m * n) {
-            result[i] = mat[j++];
-        } else {
-            result[i] = 0;
-        }
-    }
-
-    return result;
-}
-
-std::vector<double> sumMatrix(bool isSum, const std::vector<double>& mat1, const std::vector<double>& mat2) {
-    std::vector<double> result(mat1.size());
-
-    for (int i = 0; i < mat1.size(); ++i) {
-        result[i] = isSum ? mat1[i] + mat2[i] : mat1[i] - mat2[i];
-    }
-
-    return result;
-}
-
-std::vector<std::vector<double>> splitMatrix(const std::vector<double>& mat) {
-    std::vector<std::vector<double>> result(4);
-    int n = static_cast<int>(sqrt(mat.size()));
-    int split_n = n / 2;
-
-    for (int i = 0; i < 4; ++i) {
-        std::vector<double> subMat(split_n * split_n);
-        result[i] = subMat;
-    }
-
-    for (int i = 0; i < mat.size() / 2; ++i) {
-        int row = i / n;
-        if (i % n >= split_n) {
-            result[1][row * split_n + i % split_n] = mat[i];
-        } else {
-            result[0][row * split_n + i % split_n] = mat[i];
-        }
-    }
-    for (int i = static_cast<int>(mat.size() / 2); i < mat.size(); ++i) {
-        int row = i / n - n / 2;
-        if (i % n >= split_n) {
-            result[3][row * split_n + i % split_n] = mat[i];
-        } else {
-            result[2][row * split_n + i % split_n] = mat[i];
-        }
-    }
-
-    return result;
-}
-
-std::vector<double> getStrassenSequence(const std::vector<double>& matA, const std::vector<double>& matB) {
-    if (matA.size() == 4) {
-        double P1 = (matA[0] + matA[3]) * (matB[0] + matB[3]);
-        double P2 = (matA[2] + matA[3]) * (matB[0]);
-        double P3 = (matA[0]) * (matB[1] - matB[3]);
-        double P4 = (matA[3]) * (matB[2] - matB[0]);
-        double P5 = (matA[0] + matA[1]) * (matB[3]);
-        double P6 = (matA[2] - matA[0]) * (matB[0] + matB[1]);
-        double P7 = (matA[1] - matA[3]) * (matB[2] + matB[3]);
-
-        std::vector<double> matC(4);
-        matC[0] = P1 + P4 - P5 + P7;
-        matC[1] = P3 + P5;
-        matC[2] = P2 + P4;
-        matC[3] = P1 - P2 + P3 + P6;
-
-        return matC;
-    } else {
-        std::vector<std::vector<double>> subMatsA(4);
-        std::vector<std::vector<double>> subMatsB(4);
-
-        subMatsA = splitMatrix(matA);
-        subMatsB = splitMatrix(matB);
-
-        std::vector<double> P1 = getStrassenSequence(sumMatrix(true, subMatsA[0], subMatsA[3]),
-                                                     sumMatrix(true, subMatsB[0], subMatsB[3]) );
-        std::vector<double> P2 = getStrassenSequence(sumMatrix(true, subMatsA[2], subMatsA[3]),
-                                                     subMatsB[0]);
-        std::vector<double> P3 = getStrassenSequence(subMatsA[0],
-                                                     sumMatrix(false, subMatsB[1], subMatsB[3]));
-        std::vector<double> P4 = getStrassenSequence(subMatsA[3], sumMatrix(false, subMatsB[2],
-                                                                            subMatsB[0]));
-        std::vector<double> P5 = getStrassenSequence(sumMatrix(true, subMatsA[0], subMatsA[1]),
-                                                     subMatsB[3]);
-        std::vector<double> P6 = getStrassenSequence(sumMatrix(false, subMatsA[2], subMatsA[0]),
-                                                     sumMatrix(true, subMatsB[0], subMatsB[1]));
-        std::vector<double> P7 = getStrassenSequence(sumMatrix(false, subMatsA[1], subMatsA[3]),
-                                                     sumMatrix(true, subMatsB[2], subMatsB[3]));
-
-        std::vector<double> C11(P1.size());
-        std::vector<double> C12(P1.size());
-        std::vector<double> C21(P1.size());
-        std::vector<double> C22(P1.size());
-
-        for (int i = 0; i < P1.size(); ++i) {
-            C11[i] += P1[i] + P4[i] - P5[i] + P7[i];
-            C12[i] += P3[i] + P5[i];
-            C21[i] += P2[i] + P4[i];
-            C22[i] += P1[i] - P2[i] + P3[i] + P6[i];
-        }
-
-        std::vector<double> matC(matA.size());
-
-        int n = static_cast<int>(sqrt(matC.size()));
-        int split_n = n / 2;
-
-        for (int i = 0; i < matC.size() / 2; ++i) {
-            int row = i / n;
-            if (i % n >= split_n) {
-                matC[i] = C12[row * split_n + i % split_n];
-            } else {
-                matC[i] = C11[row * split_n + i % split_n];
+    for (std::size_t i = 0; i < n; i++) {
+        for (std::size_t j = 0; j < n; j++) {
+            for (std::size_t k = 0; k < n; k++) {
+                C[i * n + j] += A.at(i * n + k) * B.at(k * n + j);
             }
         }
-        for (int i = static_cast<int>(matC.size() / 2); i < matC.size(); ++i) {
-            int row = i / n - n / 2;
-            if (i % n >= split_n) {
-                matC[i] = C22[row * split_n + i % split_n];
-            } else {
-                matC[i] = C21[row * split_n + i % split_n];
-            }
-        }
-
-        return matC;
     }
+    return C;
+}
+
+std::vector<double> add(std::vector<double> A, std::vector<double> B) {
+    std::vector<double> C(A.size());
+    for (int i = 0; i < A.size(); i++) C[i] = A[i] + B[i];
+    return C;
+}
+
+std::vector<double> sub(const std::vector<double>& A, const std::vector<double>& B) {
+    std::vector<double> C(A.size());
+    for (int i = 0; i < A.size(); i++) C[i] = A[i] - B[i];
+    return C;
+}
+
+// Matrices A and B have sizes n x n and are represented as vectors
+std::vector<double> strassenMultiply(const std::vector<double>& A,
+                                  const std::vector<double>& B, std::size_t n) {
+    // Basic case
+    if (n == 1) {
+        std::vector<double> C = {A[0] * B[0]};
+        return C;
+    }
+
+    // Splitting matrices into submatrices
+    std::size_t m = n / 2;
+    std::vector<double> A11(m * m), A12(m * m), A21(m * m), A22(m * m);
+    std::vector<double> B11(m * m), B12(m * m), B21(m * m), B22(m * m);
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < m; j++) {
+            A11[i * m + j] = A[i * n + j];
+            A12[i * m + j] = A[i * n + (j + m)];
+            A21[i * m + j] = A[(i + m) * n + j];
+            A22[i * m + j] = A[(i + m) * n + (j + m)];
+            B11[i * m + j] = B[i * n + j];
+            B12[i * m + j] = B[i * n + (j + m)];
+            B21[i * m + j] = B[(i + m) * n + j];
+            B22[i * m + j] = B[(i + m) * n + (j + m)];
+        }
+    }
+
+    // Recursive calls for submatrices
+    std::vector<double> P1 = strassenMultiply(A11, sub(B12, B22), m);
+    std::vector<double> P2 = strassenMultiply(add(A11, A12), B22, m);
+    std::vector<double> P3 = strassenMultiply(add(A21, A22), B11, m);
+    std::vector<double> P4 = strassenMultiply(A22, sub(B21, B11), m);
+    std::vector<double> P5 = strassenMultiply(add(A11, A22), add(B11, B22), m);
+    std::vector<double> P6 = strassenMultiply(sub(A12, A22), add(B21, B22), m);
+    std::vector<double> P7 = strassenMultiply(sub(A11, A21), add(B11, B12), m);
+
+    // Result calculation
+    std::vector<double> C(n * n);
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < m; j++) {
+            C[i * n + j] =
+                P5[i * m + j] + P4[i * m + j] - P2[i * m + j] + P6[i * m + j];
+            C[i * n + (j + m)] = P1[i * m + j] + P2[i * m + j];
+            C[(i + m) * n + j] = P3[i * m + j] + P4[i * m + j];
+            C[(i + m) * n + (j + m)] =
+                P5[i * m + j] + P1[i * m + j] - P3[i * m + j] - P7[i * m + j];
+        }
+    }
+
+    return C;
 }
