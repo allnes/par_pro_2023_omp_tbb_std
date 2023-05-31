@@ -9,7 +9,7 @@ std::vector<double> genVec(int n) {
     std::random_device rd;
     std::mt19937 gen(rd());
     // генерация чисел по равномерному распределению:
-    std::uniform_real_distribution<double> dis(0.0, 9.0); 
+    std::uniform_real_distribution<double> dis(0.0, 9.0);
     std::vector<double> vec(n);
 
     for (int i = 0; i < n; i++)
@@ -18,7 +18,7 @@ std::vector<double> genVec(int n) {
     return vec;
 }
 
-// Перемножим матрицы размера n*n 
+// Перемножим матрицы размера n*n
 std::vector<double> mult(const std::vector<double>& A,
                                const std::vector<double>& B, int n) {
     std::vector<double> C(n * n, 0);
@@ -83,7 +83,7 @@ std::vector<double> strassen(const std::vector<double>& A,
     std::vector<double> C(n * n);
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < m; j++) {
-            C[i * n + j] = 
+            C[i * n + j] =
                 P5[i * m + j] + P4[i * m + j] - P2[i * m + j] + P6[i * m + j];
             C[i * n + (j + m)] = P1[i * m + j] + P2[i * m + j];
             C[(i + m) * n + j] = P3[i * m + j] + P4[i * m + j];

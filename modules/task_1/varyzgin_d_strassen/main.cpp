@@ -43,7 +43,7 @@ TEST(TestsStrassenSeq, Test4on4) {
     std::vector<double> C = mult(A, B, n);
     std::vector<double> Strassen = strassen(A, B, n);
 
-    ExpectNear(C, Strassen);
+    eq(C, Strassen);
 }
 
 TEST(TestsStrassenSeq, Test8on8) {
