@@ -1,7 +1,6 @@
 // Copyright 2023 Selivankin Sergey
 #include <gtest/gtest.h>
 #include <vector>
-#include <iostream>
 #include "./strassen.h"
 
 TEST(strassen, Test_0) {
@@ -19,8 +18,6 @@ TEST(strassen, Test_0) {
     int new_size = getNewSize(3, 3, 3, 3);
     std::vector<double> a = appendZeros(matA, 3, 3, new_size);
     std::vector<double> b = appendZeros(matB, 3, 3, new_size);
-    for(int i = 0; i < 4*4; i++)
-        std::cout<<a<<", ";
     ASSERT_EQ(getStrassenSequence(a, b), result);
 }
 
