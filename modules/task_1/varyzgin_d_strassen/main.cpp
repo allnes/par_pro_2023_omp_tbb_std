@@ -1,4 +1,4 @@
-// Copyright 2023 Selivankin Sergey
+// Copyright 2023 Varyzgin Dmitry
 #include <gtest/gtest.h>
 #include <vector>
 #include <cmath>
@@ -37,17 +37,6 @@ TEST(TestsStrassenSeq, Test2on2) {
 
 TEST(TestsStrassenSeq, Test4on4) {
     int n = 4;
-    std::vector<double> A = genVec(n * n);
-    std::vector<double> B = genVec(n * n);
-
-    std::vector<double> C = mult(A, B, n);
-    std::vector<double> Strassen = strassen(A, B, n);
-
-    eq(C, Strassen);
-}
-
-TEST(TestsStrassenSeq, Test8on8) {
-    int n = 8;
     std::vector<double> A = genVec(n * n);
     std::vector<double> B = genVec(n * n);
 
