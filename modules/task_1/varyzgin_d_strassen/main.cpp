@@ -5,9 +5,9 @@
 #include <algorithm>
 #include "./strassen.h"
 
-// метод, занимающийся распознаванием эквивалентности с некой точностью
+// eq with smth accuracy
 void eq(const std::vector<double>& vec1, const std::vector<double>& vec2) {
-    if (vec1.size() != vec2.size()) throw "не сопостовимые размерности матриц";
+    if (vec1.size() != vec2.size()) throw "non equal dimentions";
     for (std::size_t i = 0; i < vec1.size(); i++)
         EXPECT_NEAR(vec1[i], vec2[i], 0.0001);
 }
@@ -25,7 +25,7 @@ TEST(TestsStrassenSeq, Test1on1) {
 
 TEST(TestsStrassenSeq, Test2on2) {
     int n = 2;
-    // тут сами зададим значения
+    // our values
     std::vector<double> A = {1.0, 2.0, 3.0, 4.0};
     std::vector<double> B = {5.0, 6.0, 7.0, 8.0};
 

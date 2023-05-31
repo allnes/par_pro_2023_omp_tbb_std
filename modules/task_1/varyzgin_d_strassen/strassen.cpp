@@ -8,7 +8,7 @@
 std::vector<double> genVec(int n) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    // генерация чисел по равномерному распределению:
+    // gen of digits with Uniform distribution:
     std::uniform_real_distribution<double> dis(0.0, 9.0);
     std::vector<double> vec(n);
 
@@ -18,7 +18,7 @@ std::vector<double> genVec(int n) {
     return vec;
 }
 
-// Перемножим матрицы размера n*n
+// mult matrices with n*n dimmentions
 std::vector<double> mult(const std::vector<double>& A,
                                const std::vector<double>& B, int n) {
     std::vector<double> C(n * n, 0);
@@ -47,13 +47,13 @@ std::vector<double> sub(const std::vector<double>& A, const std::vector<double>&
 
 std::vector<double> strassen(const std::vector<double>& A,
                                   const std::vector<double>& B, std::size_t n) {
-    // Если это числа
+    // if it is digits
     if (n == 1) {
         std::vector<double> C = {A[0] * B[0]};
         return C;
     }
 
-    // Разделение матриц на подматрицы
+    // submatrices
     std::size_t m = n / 2;
     std::vector<double> A11(m * m), A12(m * m), A21(m * m), A22(m * m);
     std::vector<double> B11(m * m), B12(m * m), B21(m * m), B22(m * m);
@@ -70,7 +70,7 @@ std::vector<double> strassen(const std::vector<double>& A,
         }
     }
 
-    // Рекурсивное выполнение умножения подматриц
+    // reqursive multiplying
     std::vector<double> P1 = strassen(A11, sub(B12, B22), m);
     std::vector<double> P2 = strassen(add(A11, A12), B22, m);
     std::vector<double> P3 = strassen(add(A21, A22), B11, m);
@@ -79,7 +79,7 @@ std::vector<double> strassen(const std::vector<double>& A,
     std::vector<double> P6 = strassen(sub(A12, A22), add(B21, B22), m);
     std::vector<double> P7 = strassen(sub(A11, A21), add(B11, B12), m);
 
-    // Вычисление результата
+    // Giving res
     std::vector<double> C(n * n);
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < m; j++) {
